@@ -1,0 +1,67 @@
+<section class="shopping-cart spad ">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-8">
+                <div class="shopping_cart_table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Wish List</th>
+
+                                <th>Total</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{#if list.[0].wishProduct}}
+                            {{#each list.[0].wishProduct}}
+                            <tr>
+                                <td class="product_cart_item">
+                                    <div class="product_cartitem_pic">
+                                        <a href="/ProDetails/{{this._id}}"><img style="width: 50px;"
+                                                src="/pro-img/{{this._id}}.jpg" alt=""></a>
+                                    </div>
+                                    <div class="product_cartitem_text">
+                                        <h6>{{this.name}}&nbsp;&nbsp;<span class="text-success"
+                                                style="font-size: small;">{{#if
+                                                offername}}{{this.offername}}%{{/if}}</span></h6>
+                                        <a><button class="text-white rounded"
+                                                style="border: none;background-color:rgba(1, 1, 17, 0.878);font-size: smaller;"
+                                                onclick="addToCart('{{this._id}}')">+ Add to Cart</button></a>
+                                        {{!-- <h5>₹{{this.price}}</h5> --}}
+                                    </div>
+                                </td>
+                                <td class="cart__price">₹{{this.price}}</td>
+                                <td onclick="cancel('{{this.id}}')" class="cart_close"><i class="fa fa-close"></i>
+                                </td>
+                            </tr>
+                            {{/each}}
+                            {{else}}
+                            <tr>
+                                <td class="text-center">
+                                    <h4 class="font-weight-bold">WISHLIST IS EMPTY</h4><img style="width: 10rem;"
+                                        src="/img/icon/empty.png" alt="">
+                                </td>
+                            </tr>
+                            {{/if}}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="continue__btn">
+                            <a href="/shop">Continue Shopping</a>
+                        </div>
+                    </div>
+                    {{!-- <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="continue_btn update_btn">
+                            <a href="#"><i class="fa fa-spinner"></i> Update cart</a>
+                        </div>
+                    </div> --}}
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>

@@ -1,0 +1,173 @@
+
+
+<div class="container rounded bg-white mt-5 mb-5">
+    <div class="row">
+        <div class="col-md-3 border-right">
+            <div class="d-flex flex-column align-items-center text-center p-3 py-5"><img class="rounded-circle mt-5" width="150px" src="https://st3.depositphotos.com/15648834/17930/v/600/depositphotos_179308454-stock-illustration-unknown-person-silhouette-glasses-profile.jpg"><span class="font-weight-bold">{{user.name}}</span></div>
+             <div class="d-flex flex-column align-items-center text-center p-3 py-3">
+            <button type="button" class="btn" style="background-color: rgb(45, 25, 224);color: #fff;" data-toggle="modal" data-target="#exampleModal">
+  Change Password
+</button>
+<button  type="button" class="btn" style="background-color: rgb(45, 25, 224);color: #fff; margin-top:1rem; width:10.2rem ;" data-toggle="modal" data-target="#exampleModalCenter">
+  Add Address
+</button>
+
+ <!-- Modal -->
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog"
+                aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle" style="font-family: 'Times New Roman', Times, serif;">Add Address</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form  id="addingAddress" action="/user-profileaddress" method="post">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="name" placeholder="Enter name">
+                                    <input type="text" class="form-control" name="id"  value="{{user._id}}" hidden>
+                                </div>
+                                <div class="form-group">
+                                    <input type="tel" class="form-control" name="number"
+                                        placeholder="Enter PhoneNo">
+
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" class="form-control" id="exampleInputEmail1" name="Email"
+                                        aria-describedby="emailHelp" placeholder="Enter email">
+                                    <small id="emailHelp" class="form-text text-muted">We'll never share your email with
+                                        anyone else.</small>
+                                </div>
+                                <div class="form-group">
+                                
+                                    <input type="text" class="form-control" name="address" placeholder="Enter Address">
+
+                                </div>
+                                <div class="form-group">
+                                   
+                                    <input type="text" class="form-control" name="city" placeholder="Enter city">
+
+                                </div>
+                                <div class="form-group">
+                                    
+                                    <input type="pincode" class="form-control" name="pincode" placeholder="Pincode">
+                                </div>
+                               
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-sm" data-dismiss="modal" style="background-color:grey ; color: black;">Close</button>
+                                    <button type="submit" class="btn btn-sm" style="background-color: blue; color: aliceblue;">Save changes</button>
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+
+
+
+<!-- Modal -->
+<form action="/changepassword" method="post">
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Password Settings</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <label class="labels"></label><input type="text" name="oldpassword" class="form-control" placeholder="Enter Your Old Password" value="">
+         <label class="labels"></label><input type="text" name="newpassword" class="form-control" placeholder="Enter Your New Password" value="">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+        </div>
+        </div>
+        <div class="col-md-5 border-left">
+            <div class="p-3 py-5">
+                    <form action="/updateprofile"method='post' > 
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-right" style="font-family: 'Times New Roman', Times, serif;">Profile Settings</h4>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6"><label class="labels">Name</label><input type="text" class="form-control" name="name" placeholder="{{user.name}}" value=""></div>
+                    {{!-- <div class="col-md-6"><label class="labels">Surname</label><input type="text" class="form-control" value="" placeholder="surname"></div> --}}
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-12"><label class="labels">Mobile Number</label><input type="text" name="mobilenumber" class="form-control" placeholder="{{user.mobilenumber}}" value=""></div>
+                    <div class="col-md-12"><label class="labels">Email ID</label><input type="text" name="email" class="form-control" placeholder="{{user.email}}" value=""></div>
+                     <div class="col-md-12"><label class="labels">Address</label><input type="text" name="address" class="form-control" placeholder="{{user.address}}" value=""></div>
+                </div>
+
+                <div class="mt-5 text-center"><button class="btn btn-primary profile-button" type="submit">Save Profile</button></div>
+
+                    </form>
+            </div>
+        </div>
+        
+         
+    </div>
+</div>
+
+<style>
+    body {
+    background: rgb(45, 25, 224)
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #BA68C8
+}
+
+.profile-button {
+    background: rgb(45, 25, 224);
+    box-shadow: none;
+    border: none
+}
+
+.profile-button:hover {
+    background: #682773
+}
+
+.profile-button:focus {
+    background: #682773;
+    box-shadow: none
+}
+
+.profile-button:active {
+    background: #682773;
+    box-shadow: none
+}
+
+.back:hover {
+    color: #682773;
+    cursor: pointer
+}
+
+.labels {
+    font-size: 11px
+}
+
+.add-experience:hover {
+    background: #BA68C8;
+    color: #fff;
+    cursor: pointer;
+    border: solid 1px #BA68C8
+}
+</style>

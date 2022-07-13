@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{title}}</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    {{#if admi}}
+     <link rel="shortcut icon" href="./img/svg/logo.svg" type="image/x-icon">
+      <!-- Custom styles -->
+       <link rel="stylesheet" href="/stylesheets/style.min.css">
+         <link rel="icon" href="img/core-img/favicon.ico">
+
+          <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:400,700"
+    />
+    <!-- https://fonts.google.com/specimen/Roboto -->
+    <link rel="stylesheet" href="/assets/css/fontawesome.min.css" />
+    <!-- https://fontawesome.com/ -->
+    <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+    <!-- https://getbootstrap.com/ -->
+    <link rel="stylesheet" href="/assets/css/templatemo-style.css">
+    <!--
+	Product Admin CSS Template
+	https://templatemo.com/tm-524-product-admin
+	-->
+    {{/if}}
+    
+ 
+     <!-- Favicon  -->
+    <link rel="icon" href="img/core-img/favicon.ico">
+
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" href="/css/core-style.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">
+    
+  </head>
+  <body>
+    {{#if use}}
+    {{>header}}
+    {{/if}}
+    {{#if admi}}
+    {{>adminheader}}
+    {{/if}}
+    {{{body}}}
+
+
+   
+    <!-- jQuery (Necessary for All JavaScript Plugins) -->
+    <script src="/javascripts/jquery/jquery-2.2.4.min.js"></script>
+    <!-- Popper js -->
+    <script src="/javascripts/popper.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="/javascripts/bootstrap.min.js"></script>
+    <!-- Plugins js -->
+    <script src="/javascripts/plugins.js"></script>
+    <!-- Classy Nav js -->
+    <script src="/javascripts/classy-nav.min.js"></script>
+    <!-- Active js -->
+    <script src="/javascripts/active.js"></script>
+    
+
+
+<script src="/plugins/feather.min.js"></script>
+<!-- Custom scripts -->
+<script src="/javascripts/js/script.js"></script>
+
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    {{!-- <script src="https://www.paypal.com/sdk/js?client-id=AZh6xdfYW3eFPYffLr6TTDUHVLrGwBOyOxJYcS5PVFwNBA3HekYdtlPla6i7WPwvcwpYvu6emGafMQdh&currency=USD"></script> --}}
+     
+
+    <script defer src="https://cdn.crop.guide/loader/l.js?c=TPBSGJ"></script>
+    <script>
+      $(function() {
+        $(".tm-product-name").on("click", function() {
+          window.location.href = "edit-product.html";
+        });
+
+
+      
+
+      });
+    </script>
+    
+        <script src="/javascripts/scripty.js"></script>
+  </body>
+</html>

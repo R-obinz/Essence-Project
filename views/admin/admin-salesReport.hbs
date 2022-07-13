@@ -1,0 +1,64 @@
+
+<form action="/admin/takeReport" method="post">
+  <div>
+  <label for="">From</label>
+  <input type="date" name="start">
+  <label for="">To</label>
+  <input type="date" name="end">
+ <button type="submit">Sumbit</button>
+</form>
+
+  {{!-- <button  id="hello" style="margin-left: 653px;padding: 8px;" >PDF</button> --}}
+   <a href="#" class="btn btn-success btn-lg" id="EXCEL" style="margin-left: 250px;padding: 5px;"> EXCEL</a>
+   <a href="#" class="btn btn-success btn-lg" id="hello" style="margin-left: 747px;
+    margin-top: -61px;
+    padding: 5px;"> Pdf</a>
+
+<table class="table" id="report">
+  <thead>
+    <tr>
+      <th scope="col">DATE</th>
+      <th scope="col">EMAIL</th>
+      <th scope="col">NAME</th>
+      <th scope="col">ORDER STATUS</th>
+      <th scope="col">PAYMENT METHOD</th>
+      <th scope="col">ORDER AMOUNT</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each list}}
+      
+    <tr>
+        
+     
+      <td>{{this.Date}}</td>
+      <td>{{this.email}}</td>
+      <td>{{this.name.name}}</td>
+      <td>{{this.status}}</td>
+      <td>{{this.paymentMethod}}</td>
+      <td>{{this.subtotal}}</td>
+      {{!-- {{/each}} --}}
+      
+    </tr>
+   
+      {{/each}}
+  </tbody>
+</table>
+
+<table class="table">
+<thead>
+    <tr></tr>
+</thead>
+<tbody>
+    
+    <tr>
+        <td>Tota Order Amount = Rs.{{totalAmount}}</td>
+    </tr>
+  
+</tbody>
+</table>
+ 
+   <script src="/javascripts/tabletoexcel.js"></script>
+    
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

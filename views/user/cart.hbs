@@ -1,0 +1,136 @@
+
+
+{{#if products}}
+
+<div class="row" style="margin-top: 8rem;">
+
+                <div class="col-12 col-md-6" style="margin-left: 4rem;">
+                  
+        {{#each products}}
+                
+
+        <div class="card rounded-3 mb-4" >
+          <div class="card-body p-4" >
+
+            <div class="row d-flex justify-content-between align-items-center" style="margin-top: 10px;">
+                
+              <div class="col-md-2 col-lg-2 col-xl-2">
+                <img
+                  src="/images/{{this.product.image}}"
+                  class="img-fluid rounded-3" alt="">
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-3">
+                <p class="lead fw-normal mb-2"> {{this.product.productname}}</p>
+                <p><span class="text-muted">Price:{{this.product.price}} </span></p>
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                {{!-- <button class="btn btn-link px-2"
+                  onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
+                  <i class="fas fa-minus"></i>
+                </button> --}}
+                {{#if product.status}}
+                <button style="width: 65px;" class="cart-item-count mr-3" onclick="changeQuantity('{{this._id}}','{{this.item}}','{{this.quantity}}','{{this.product.productname}}',{{this.product.offerPrice}},-1)">-</button>
+                {{else}}
+                 <button style="width: 65px;" class="cart-item-count mr-3" onclick="changeQuantity('{{this._id}}','{{this.item}}','{{this.quantity}}','{{this.product.productname}}',{{this.product.price}},-1)">-</button>
+                {{/if}}
+                <span   id="{{this.item}}" >{{this.quantity}} </span>
+                  
+
+                {{!-- <button class="btn btn-link px-2"
+                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
+                  <i class="fas fa-plus"></i>
+                </button> --}}
+                
+                <button style="width: 65px;" class="cart-item-count ml-3" onclick="changeQuantity('{{this._id}}','{{this.item}}','{{this.quantity}}','{{this.product.productname}}',{{this.product.price}},1)">+</button>
+              </div>
+              {{!-- <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                <h5 id='{{this.product.productname}}' class="mb-0">₹{{this.subtotal}}</h5>
+              </div> --}}
+              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                {{!-- <a href="#!" class="text-danger"><i class="fa fa-trash" aria-hidden="true"></i></a> --}}
+                <button onclick="removeFromCart('{{this._id}}','{{this.item}}')"><i class="fa fa-trash" aria-hidden="true" ></i></button>
+              </div>
+              
+            </div>
+                
+          </div>
+        </div>
+        {{/each}}
+
+        
+            <form>
+  {{!-- <div >
+    
+    <input type="text" class="form-control" id="coupon"  name="coupon" style="width: 18rem;" >
+    <button type="submit" class="btn btn-sm" style="background-color: #0315ff; color: aliceblue;">Apply</button>
+    
+  </div> --}}
+
+  <div class="input-group ">
+  <input type="text" class="form-control" id="coupon" name="coupon"  placeholder="Coupon Code" >
+  <div class="input-group-append" style="width: 22rem;">
+    <button class="btn btn-sm" style="background-color: #0315ff;color:aliceblue" type="submit">Apply</button>
+  </div>
+</div>
+        </form>
+        
+        
+        
+                </div>
+                
+                
+                
+                <div class="col-12 col-md-6 col-lg-5 ml-lg-auto">
+                 
+                    <div class="order-details-confirmation">
+                        <div class="cart-page-heading">
+                            <h5>PRICE DETAILS</h5>
+                            
+                        </div>
+                        
+                         
+                        <div>
+                        <ul class="order-details-form mb-4">
+                            {{#each products}}
+                            <li><span id="{{this.item}}">{{this.product.productname}} ({{quantity}})</span>  <span id='{{this.product.productname}}' >₹ {{this.subtotal}}</span></li>
+                            
+                            
+                            {{/each}}
+                            <li><span>Discount</span> <span style="color: rgb(23, 204, 23);">-{{discount}}</span></li>
+                            <li><span >Delivery Charges</span> <span style="color: rgb(23, 204, 23);">Free</span></li>
+                            {{!-- {{#ifCound user.Coupon 'true' }} --}}
+                            
+                            <li><span>Amount</span> <span id="total">{{total}}</span></li>
+
+                            <li><span> Total Amount</span> <span id="discounttotal">{{discountprice}}</span></li>
+                            {{!-- {{else}} --}}
+                            {{!-- {{/ifCound}} --}}
+                        </ul>
+                        </div>
+                   
+                      
+            
+
+
+
+                            
+                        
+                         <input type="text" name="userId" id="" value="{{user._id}}" hidden>
+                            <button style="background-color: #0315ff;color: aliceblue;" type="submit"  onclick="location.href='/checkout'" class="btn essence-btn">Proceed to Checkout</button>
+
+                    </div>
+                    
+                </div>
+                
+            </div>
+            {{else}}
+            <div class="container" style="margin-top: 6rem; text-align: center; font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;">
+              <img src="https://www.apesoftware.com/content/images/empty-cart.png" alt="" style="height: 18rem;">
+              <br>
+              <span style="font-size: larger;">Your cart is empty!</span>
+              <br>
+              <span>Add Items to it now.</span>
+              <br>
+              <button type="button" onclick="location.href='/'"  style="background-color:#0315ff ; color: aliceblue; padding: 8px; ">Shop now</button>
+              </div>
+            {{/if}}

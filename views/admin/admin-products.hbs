@@ -1,0 +1,72 @@
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">productname</th>
+      <th scope="col">price</th>
+      <th scope="col">category</th>
+      <th scope="col">Description</th>
+      <th scope="col">product Image</th>
+      <th scope="col">Apply Offer</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    {{#each items}}
+    <tr>
+      <th scope="row">{{math @index "+" 1}}</th>
+      <td>{{this.productname}}</td>
+      <td>{{this.price}}</td>
+      <td>{{this.categoryname.categoryname}}</td>
+      <td>{{this.description}}</td>
+      <td> <img style="width: 50px; height:50px" src="/images/{{this.image}}"> </td>
+      {{#if status}}
+      <td><a href=""   class="btn btn-primary"data-toggle="modal" data-target="#b{{this._id}}" >Remove Offer</a></td>
+      {{else}}
+       <td><a href=""   class="btn btn-primary"data-toggle="modal" data-target="#b{{this._id}}" >Apply</a></td>
+      {{/if}}
+      
+      {{!-- <td><button type="button" class="btn btn-primary" data-togg="modal" data-target="#b{{this._id}}">Apply</button></td> --}}
+      <td><a href="/admin/edit-product/{{this._id}}" class="btn btn-primary" >Edit</a> 
+      <a href="/admin/delete-product/{{this._id}}" onclick= " return confirm('are you sure to delete {{this.name}}')" class="btn btn-danger">Delete</a>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+ <!-- Modal -->
+ {{#each items}}
+<div class="modal fade" id="b{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Apply Coupon</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" >
+      <form class="form" id="myFormeaa" action="/admin/applyOffer" method="post">
+        <input type="text" value="{{this.productname}}">
+        <input type="text" name="itemid" value="{{this._id}}" hidden>
+    
+    <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="offerid" >
+    <option selected>Open this select menu</option>
+    {{#each ../offer}}
+    <option value="{{this._id}}">{{this.offerCode}}</option>
+    {{/each}}
+    </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary"  >Save </button>
+        
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{/each}}

@@ -1,0 +1,51 @@
+<div class="container-xxl flex-grow-1 container-p-y">
+              <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light"></span> Users  Table</h4>
+
+              <!-- Basic Bootstrap Table -->
+              <div class="card">
+                <h5 class="card-header">Table Basic</h5>
+                <div class="table-responsive text-nowrap">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Roll No.</th>
+                         <th scope="col">user Name</th>
+                         <th scope="col">Email</th>
+                         <th scope="col">Number</th>
+                        <th scope="col">User Status</th>
+                        <th scope="col">Action</th>
+                            
+                      </tr>
+                    </thead>
+                     <tbody>
+    {{#each users}}
+    <tr>
+      <td scope="row">{{math @index '+' 1}}</td>
+       <td>{{this.name}}</td>
+      <td>{{this.email}}</td>
+      <td>{{this.mobilenumber}}</td>
+      {{!-- <td>{{this.password}}</td> --}}
+      {{!-- <td>{{this.status}}</td> --}}
+      {{!-- <td><a class="btn btn-primary" href="/admin/edit-user/{{this._id}}">Status</a></td> --}}
+    
+      {{#if this.status}}
+       <td>Active</td>
+       {{else}}
+        <td>Disabled</td>
+        {{/if}}
+       {{#if this.status}}
+
+       <td>   <a href="/admin/block/{{this._id}}"  class="btn btn-outline-danger btn-sm rounded-pill" >block</a></td>
+       {{else}}
+       <td>   <a href="/admin/unblock/{{this._id}}"  class="btn btn-outline-success btn-sm rounded-pill" >unblock</a></td>
+       {{/if}}
+
+      
+      
+    </tr>
+    {{/each}}
+   
+  </tbody>
+  </table>
+  </div>
+ </div>

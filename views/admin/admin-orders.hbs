@@ -1,0 +1,87 @@
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Username</th>
+      <th scope="col">Email</th>
+      <th scope="col">Phone</th>
+      <th scope="col">Date</th>
+      <th scope="col">Products</th>
+      <th scope="col">Total</th>
+      <th scope="col">PaymentMethod</th>
+      <th scope="col">Status</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each orders}}
+      
+    <tr>
+        
+      <th scope="row">{{math @index "+"1}}</th>
+      <td>{{this.name.name}}</td>
+      <td>{{this.email}}</td>
+      <td>{{this.phone}}</td>
+      <td>{{this.Date}}</td>
+      <td>{{this.product.productname}}</td>
+      <td>{{this.subtotal}}</td>
+      <td>{{this.paymentMethod}}</td>
+      <td>{{this.status}}</td>
+      {{!-- {{/each}} --}}
+      
+      <td>
+      {{!-- <a href="/admin/cancel-order/{{this._id}}" onclick= " return confirm('are you sure to cancel {{this.name}}')" class="btn btn-danger">Cancel</a> --}}
+      {{!-- <span class="p-relative">
+                        <button class="dropdown-btn transparent-btn" type="button" title="More info">
+                          <div class="sr-only">More info</div>
+                          <i data-feather="more-horizontal" aria-hidden="true"></i>
+                        </button>
+                        <ul class="users-item-dropdown dropdown">
+                          <select onchange="status(this.value)" name="select" id="category">
+                          <li><a href="/admin/cancel-order/{{this._id}}" onclick="return confirm('are you sure to cancel{{this.name}}')" >cancel</a></li>
+                          <li><a href="##">delivered</a></li>
+                          <li><a href="##"></a></li>
+                          </select>
+                        </ul>
+                      </span> --}}
+   {{!-- <select class="form-select" id="category" aria-label="Default select example">
+   <option selected>Open this select menu</option>
+  <option value="1">Cancel</option>
+  <option value="2">Delivered</option>
+  <option value="3">Shipped</option>
+</select> --}}
+{{#ifCound this.status 'Placed'}}
+
+
+<td> <select onchange="status(this.value,'{{this._id}}','{{this.name._id}}')" class="custom-select tm-select-accounts"
+                            id="category" name="offer" >
+                            <option selected>{{this.status}}</option>
+                            <option value="SHIPPED">SHIPPED</option>
+                            <option value="CANCEL">CANCEL</option>
+                            <option value="DELIVERED">DELIVERED</option>
+                            {{!-- <option value="2">Most Popular</option>
+                            <option value="3">Trending</option> --}}
+                        </select >
+                    </td>
+                      
+      </td>
+      {{else}}{{#ifCound this.status 'SHIPPED'}}
+      <td>
+        <select onchange="status(this.value,'{{this._id}}','{{this.name._id}}')" class="custom-select tm-select-accounts"
+                            id="category" name="offer" >
+                            <option selected>{{this.status}}</option>
+                            <option value="CANCEL">CANCEL</option>
+                            <option value="DELIVERED">DELIVERED</option>
+                            {{!-- <option value="2">Most Popular</option>
+                            <option value="3">Trending</option> --}}
+                        </select >
+      </td>
+      {{/ifCound}}
+      {{/ifCound}}
+    </tr>
+
+      {{/each}}
+  </tbody>
+</table>
+</div>

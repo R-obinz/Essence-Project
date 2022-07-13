@@ -1,0 +1,56 @@
+
+<form action="/admin/takeReport" method="post">
+  <div>
+  <label for="">From</label>
+  <input type="date" name="start">
+  <label for="">To</label>
+  <input type="date" name="end">
+ <button type="submit">Sumbit</button>
+</form>
+
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">DATE</th>
+      <th scope="col">EMAIL</th>
+      <th scope="col">NAME</th>
+      <th scope="col">ORDER STATUS</th>
+      <th scope="col">PAYMENT METHOD</th>
+      <th scope="col">ORDER AMOUNT</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each list}}
+      
+    <tr>
+        
+     
+      <td>{{this.Date}}</td>
+      <td>{{this.email}}</td>
+      <td>{{this.name.name}}</td>
+      <td>{{this.status}}</td>
+      <td>{{this.paymentMethod}}</td>
+      <td>{{this.subtotal}}</td>
+      {{!-- {{/each}} --}}
+      
+    </tr>
+   
+      {{/each}}
+  </tbody>
+</table>
+
+<table class="table">
+<thead>
+    <tr></tr>
+</thead>
+<tbody>
+    
+    <tr>
+        <td>Tota Order Amount = Rs.{{sum}}</td>
+    </tr>
+  
+</tbody>
+</table>
+

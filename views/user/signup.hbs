@@ -1,0 +1,172 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essence</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
+</head>
+
+<body>
+    <section class="vh-100" style="margin-top: 107px;">
+        <div class="container-fluid h-custom">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <h3 style="text-align: center; 
+    font-family: fantasy;
+    font-size: xx-large; "> Essence</h3>
+                
+                <div class="col-md-3 col-lg-6 col-xl-4 offset-xl-1" style="margin-left:.0333% ;">
+                    <h2 style="font-family: 'Times New Roman', Times, serif; text-align: center;">Sign Up</h2>
+                    <form action="/login" method="post">
+                        
+                        <div class="form-outline mb-4">
+                            <input type="text" id="name" class="form-control form-control-lg" style="font-size:medium ;"
+                                placeholder="Enter Your Name" name="name" onkeyup="validateName()"/>
+                            {{!-- <label class="form-label" for="form3Example3">Email address</label> --}}
+                            <p id="nameerr" class="text-danger"></p>
+                        </div>
+
+                          <div class="form-outline mb-4">
+                            <input type="email" id="email" class="form-control form-control-lg" style="font-size:medium ;"
+                                placeholder="Enter Your Email" name="email" onkeyup="validateEmail()"/>
+                            {{!-- <label class="form-label" for="form3Example3">Email address</label> --}}
+                            <p id="emailerr" class="text-danger"></p>
+                        </div>
+                        
+                          <div class="form-outline mb-4">
+                            <input type="tel" id="mobileNumber" class="form-control form-control-lg" style="font-size:medium ;"
+                                placeholder="Enter Your MobileNumber" name="mobileNumber" onkeyup="validateMobile()"/>
+                            {{!-- <label class="form-label" for="form3Example3">Email address</label> --}}
+                            <p id="numbererr" class="text-danger"></p>
+                        </div>
+                        
+
+                        <!-- Password input -->
+                        <div class="form-outline mb-3">
+                            <input type="password" id="password" class="form-control form-control-lg"
+                                placeholder="Enter password" name="password" onkeyup="validatePassword()"/>
+                            {{!-- <label class="form-label" for="form3Example4">Password</label> --}}
+                            <p id="passworderr" class="text-danger"></p>
+                        </div>
+
+                        <div class="form-outline mb-3">
+                            <input type="password" id="confirmPassword" class="form-control form-control-lg"
+                                placeholder="Repeat password" name="confirmPassword" onkeyup="validateConfirmPassword()"/>
+                            {{!-- <label class="form-label" for="form3Example4">Password</label> --}}
+                            <p id="confirmPassworderr" class="text-danger"></p>
+                        </div>
+
+
+                        <div class="text-center text-lg-start mt-4 pt-2">
+                            <button type="submit" class="btn  btn-md" onclick="return validation()"
+                                style="padding-left: 2.5rem; padding-right: 2.5rem; background-color: #2f49d1; color: white;">Signup</button>
+                          
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+<script>
+    var errorName = document.getElementById('nameerr')
+    var errorEmail = document.getElementById('emailerr')
+    var errorPassword = document.getElementById('passworderr')
+    var errorCPassword = document.getElementById('confirmPassworderr')
+    var errormobileNumber = document.getElementById('numbererr')
+   
+    function validateName() {
+        const name = document.getElementById('name').value
+        
+        if (name == "") {
+            errorName.innerHTML = 'Enter your Name'
+            return false
+        }
+        if (!name.match(/^[a-zA-Z]*$/)) {
+            errorName.innerHTML = 'Alphabets are only allowed'
+            return false
+        }
+        errorName.innerHTML = null
+        return true
+
+    }
+    function validateEmail() {
+        const name = document.getElementById('email').value
+        if (name == "") {
+            errorEmail.innerHTML = "Enter you email address"
+            return false
+
+
+        }
+        if (!name.match(/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/)) {
+            errorEmail.innerHTML = 'Enter a proper email adress'
+            return false
+        }
+
+        errorEmail.innerHTML = null
+        return true
+    }
+
+    function validatePassword() {
+        const name = document.getElementById('password').value
+        if (name == "") {
+            errorPassword.innerHTML = "Enter a password"
+            return false
+        }
+        if (name.length < 2) {
+            errorPassword.innerHTML = "Password should be  three characters"
+            return false
+        }
+        errorPassword.innerHTML = null
+        return true
+    }
+    function validateConfirmPassword() {
+        const name = document.getElementById('confirmPassword').value
+        const cpassword = document.getElementById('password').value
+
+        if (name == "") {
+            errorCPassword.innerHTML = "Enter password"
+            return false
+        }
+        if(name!==cpassword){
+              errorCPassword.innerHTML = "Password does not match"
+              return false
+        }
+        
+        errorCPassword.innerHTML = null
+        return true
+    }
+      function validateMobile(){
+      const name = document.getElementById('mobileNumber').value
+      if(name =="" || name == null){
+        errormobileNumber.innerHTML = "Enter a mobile number"
+        return false
+      }
+      if(name.length <10 || name.length >10){
+        errormobileNumber.innerHTML = "Enter a Valid Mobile number"
+        return false
+      } 
+      
+      errormobileNumber.innerHTML = null
+      return true
+    }
+
+
+    function validation() {
+        if (!validateName() || !validateEmail() || !validatePassword() || !validateConfirmPassword() || !validateMobile ()) {
+            return false
+        }
+        return true
+    }
+</script>

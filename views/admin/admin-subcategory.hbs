@@ -1,0 +1,182 @@
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<div class="container" style="margin-top: 25px; background-color: rgb(194, 215, 221);width:1002px ">
+  <div style="float: right;">
+    <button class="button"  style="background-color: rgb(10, 14, 226);
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 16px;" data-toggle="modal" data-target="#myModale">+ Add New</button>
+  </div>
+
+
+  <!-- Modal -->
+<div class="modal fade" id="myModale" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Add New SubCategories</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <form class="form" id="myForme">
+      <label class="labels"></label><input type="text" id="subcategoryname" name="subcategoryname" class="form-control" placeholder="Enter New subCategory"  onkeyup="validateCategory()" value="">
+      <p class="text-danger" id="catErr"></p>
+
+    <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="catid" >
+    <option selected>Open this select menu</option>
+    {{#each cat}}
+    <option value="{{this._id}}">{{this.categoryname}}</option>
+    {{/each}}
+    </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" >Save </button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Sl.no</th>
+      <th scope="col">SubCategory Name</th>
+      <th scope="col">Apply Offer</th>
+      <th scope="col">Actions</th>
+     
+    </tr>
+  </thead>
+  <tbody>
+    
+    {{#each subcat }}
+    <tr>
+      <th scope="row">{{math @index '+'1}}</th>
+      <td>{{this.subcategoryname}}</td>
+       <td><a href=""   class="btn btn-primary"data-toggle="modal" data-target="#c{{this._id}}" >Apply</a></td>
+      <td><a href=""data-toggle="modal" data-target="#myModals" class="btn btn-primary" style=" border-radius: 16px; border: none;">Edit</a> 
+      <a  class="btn btn-danger" style=" border-radius: 16px; color: beige;" onclick=" deletesubCategories('{{this._id}}')">Delete</a>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{#each subcat}}
+ <!-- Modal -->
+<div class="modal fade" id="myModals" tabindex="-1" role="dialog" aria-labelledby="myModalsLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalsLabel">Change SubCategory Name</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <form class="form" id="myFormsee">
+      <label class="labels"></label><input type="text" id="subcategoryname" name="subcategoryname" class="form-control" placeholder="SubCategory Name" onkeyup="validateCategoryName()" value="">
+      <p class="text-danger" id="catNameErr"></p>
+      <input type="text" name="subcatid" value="{{this._id}}" hidden>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" >Save </button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{/each}}
+</div>
+{{#each subcat}}
+<div class="modal fade" id="c{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="myModalLabel">Apply Coupon</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" >
+      <form class="form" id="myFormeaa" action="/admin/applyCatOffer" method="post">
+        <input type="text" name="subcat" value="{{this._id}}" hidden>
+    
+    <select class="form-select form-select-sm" aria-label=".form-select-sm example" name="offerid" >
+    <option selected>Open this select menu</option>
+    {{#each ../offer}}
+    <option value="{{this._id}}">{{this.offerCode}}</option>
+    {{/each}}
+    </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary"  data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary"  >Save </button>
+        
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+{{/each}}
+
+<script>
+  let errorCategory = document.getElementById('catErr')
+  let errorName = document.getElementById('catNameErr')   
+   
+    
+    function validateCategory() {
+        const name = document.getElementById('subcategoryname').value
+        if (name == "") {
+            errorCategory.innerHTML = "Enter the categoryname"
+            return false
+
+
+        }
+        if (!name.match(/^[a-zA-Z- -']*$/)) {
+            errorCategory.innerHTML = 'Enter a Proper Name'
+            return false
+        }
+
+        errorCategory.innerHTML = null
+        return true
+    }
+
+     function validatesubCategoryName() {
+        const name = document.getElementById('subcategoryname').value
+        if (name == "") {
+            errorCategory.innerHTML = "Enter the categoryname"
+            return false
+
+
+        }
+        if (!name.match(/^[a-zA-Z- -']*$/)) {
+            errorCategory.innerHTML = 'Enter a Proper Name'
+            return false
+        }
+
+        errorCategory.innerHTML = null
+        return true
+    }
+    
+
+
+    function validation() {
+        if ( !validatesubCategory() || !validateCategoryName() ) {
+            return false
+        }
+        return true
+    }
+
+</script>
