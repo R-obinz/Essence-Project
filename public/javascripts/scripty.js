@@ -94,7 +94,7 @@
             method:'get',
             success:(response)=>{
                 if(response.status ==true){
-                    alert('Product added successfully')
+                    
                 }else if(response.status==false) {
                     location.href('/login')
                 }
@@ -577,3 +577,48 @@ function removeFromCart(cartId,itemId){
           })
       
     }
+
+    function removeFromWishlist(proId,id){
+        swal({
+            title: "Are you sure?",
+            text: "You want to remove product !",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+          }).then((value)=>{
+            if(value){
+                $.ajax({
+                    url:'/removeFrom-wishlist',
+                    data:{proId,id},
+                    method:'post',
+                    success:(response)=>{
+                        if(response.status){
+                            swal(" Product has been Removed!", {
+                                icon: "success",
+                              }).then(()=>{
+                                location.reload()
+                              })
+                              
+                        }
+                    }
+                })
+            }
+            
+          })
+      
+    }
+
+    function addtoWishlist(itemId){
+        $.ajax({
+            url:'/addtoWishlist/'+itemId,
+            method:'get',
+            success:(response)=>{
+                if(response.status ==true){
+                    alert('Product added successfully')
+                }else if(response.status==false) {
+                    location.href('/login')
+                }
+            }
+        })
+    }
+    

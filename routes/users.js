@@ -1,14 +1,19 @@
-var express = require('express');
+const express = require('express');
 const User = require('../models/User');
 const Item = require('../models/Item');
 const async = require('hbs/lib/async');
 const Category = require('../models/category');
 const controller = require('../controllers/category');
 const { getCategories } = require('../controllers/category');
-var router = express.Router();
+const router = express.Router();
 const otp = require('../controllers/otp');
 const Cart = require('../models/cart');
-var client = require('twilio')(otp.accountSID, otp.authToken)
+require('dotenv').config()
+const SSID=process.env.serviseSID
+const ASID= process.env.accountSID
+const AUID=process.env.authToken
+const client = require('twilio')(ASID, AUID)
+
 /* GET users listing. */
 const cartController = require('../controllers/cart');
 const Order = require('../models/order');
@@ -16,6 +21,7 @@ const payment = require('../controllers/payment')
 const user = require('../controllers/user');
 const Offer = require('../models/offers');
 const Coupons = require('../models/coupons');
+const Wishlist = require('../models/wishlist');
 
 
 router.get('/', async(req, res, next)=> {
@@ -62,17 +68,17 @@ router.post('/signup',async (req,res)=>{
           name: req.body.name,
           email: req.body.email,
           password:req.body.password,
-          mobilenumber:req.body.mobilenumber,
+          mobilenumber:req.body.mobileNumber,
           status:true
           
         })
         const register = await user.save();
          
-        var Number = req.body.mobilenumber
+        var Number = req.body.mobileNumber
         console.log(Number);
         req.session.phone=Number
         client.verify
-        .services(otp.serviseSID)
+        .services(SSID)
         .verifications
         .create({
           to:`+91${Number}`,
@@ -91,8 +97,9 @@ router.post('/signup',async (req,res)=>{
 
         // res.redirect('/');
       }catch(error){
-        res.status(400).send(error)
-        console.log('error'+error);
+        console.log(error);
+        res.status(400).render('500')
+        
       }
 });
 
@@ -127,12 +134,17 @@ router.get('/productdetails/:id',async(req,res)=>{
 })
 
 router.get('/shop',async(req,res)=>{
-  let cartcount = null;
+  try{
+    let cartcount = null;
 
-  const items = await Item.find({})
-  controller.getCategories().then((categoryList)=>{
-    res.render('user/shop',{use:true,items,user:req.session.userData,categoryList});
-  })
+    const items = await Item.find({})
+    controller.getCategories().then((categoryList)=>{
+      res.render('user/shop',{use:true,items,user:req.session.userData,categoryList});
+    })
+  }catch(error){
+    res.status(400).render('500')
+  }
+ 
   
 })
 
@@ -187,7 +199,7 @@ router.post('/otp-varify',(req,res)=>{
   
 
   client.verify
-    .services(otp.serviseSID)
+    .services(SSID)
     .verificationChecks.create({
       to: `+91${Number}`,
       code: otps
@@ -209,25 +221,13 @@ router.post('/otp-varify',(req,res)=>{
 
 })
 
-// router.get('/add-to-cart/:id',(req,res)=>{
-//   if(req.session.login){
-//     cartController.addToCart(req.params.id,req.session.user._id).then(()=>{
-//       res.redirect('/')
-//     })
-//   }else{
-//     res.redirect('/login')
-//   }
- 
-// })
 
-// router.get('/cart', cartController.getCart)
 
 router.get('/cart',async(req,res)=>{
   if(req.session.loggedIn){
   const owner = req.session.userData._id
   try{
-    // const cart = await Cart.findOne({owner});
-    // console.log(cart.items);
+    
     user.getCart(owner).then(async(products)=>{
       console.log('aghgahghghghghghghg');
       console.log(products);
@@ -263,7 +263,7 @@ router.get('/cart',async(req,res)=>{
    
 
   }catch(error){
-    res.status(500).send(error)
+    res.status(500).render('500')
   }
 }else{
   res.redirect('/login');
@@ -289,47 +289,56 @@ router.get('/add-to-cart/:id',async (req, res) => {
   } 
 }catch (error) {
      console.log(error);
-     res.status(500).send("something went wrong");
+     res.status(500).render('500');
   }
 });
 
 
 
 router.get('/userprofile',async(req,res)=>{
-  const user = req.session.userData;
-  console.log(user);
+  try{
+    const user = req.session.userData;
 
-  res.status(200).render('user/profile',{use:true,user:req.session.userData,categoryList: req.session.categoryList})
+    res.status(200).render('user/profile',{use:true,user:req.session.userData,categoryList: req.session.categoryList})
+  }catch(err){
+    res.status(400).render('500')
+  }
+ 
 })
 
 router.get('/checkout',(req,res)=>{
   const owner = req.session.userData._id
-  user.checkOut(owner).then(async(products)=>{
+  try{
+    user.checkOut(owner).then(async(products)=>{
    
-    let total = await user.totalPrice(req.session.userData._id) 
-    
-    let owner = req.session.userData._id
-    await User.findOne({_id:owner}).then((coupon)=>{
-      let address = coupon.address
-      if(coupon.Coupon){
-        console.log('555555');
-        console.log(coupon);
-        let tot= total
-        let discount =(tot*coupon.discount)/100
-        console.log('2222');
-        console.log(total);
-        discountprice = (tot - discount)
-        total = discountprice
-        
-        res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,address,categoryList: req.session.categoryList})
-      }else{
-        
-     res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,address, categoryList: req.session.categoryList })
-      }})
-
-    
-   
-  }) 
+      let total = await user.totalPrice(req.session.userData._id) 
+      
+      let owner = req.session.userData._id
+      await User.findOne({_id:owner}).then((coupon)=>{
+        let address = coupon.address
+        if(coupon.Coupon){
+          console.log('555555');
+          console.log(coupon);
+          let tot= total
+          let discount =(tot*coupon.discount)/100
+          console.log('2222');
+          console.log(total);
+          discountprice = (tot - discount)
+          total = discountprice
+          
+          res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,address,categoryList: req.session.categoryList})
+        }else{
+          
+       res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,address, categoryList: req.session.categoryList })
+        }})
+  
+      
+     
+    }) 
+  }catch(error){
+    res.status(200).render('400')
+  }
+  
  
 })
 
@@ -439,7 +448,7 @@ router.post('/place-order',async(req,res)=>{
 
   }catch(error){
     console.log(error)
-    res.status(400).send(error)
+    res.status(400).render('500')
   }
  
 })
@@ -459,70 +468,99 @@ router.post('/verify-payment',async(req,res)=>{
 })
 
 router.get('/success',(req,res)=>{
-  let invoice = req.session.invoice
-  user.getInvoice(invoice).then((result)=>{
-    res.status(200).render('user/success',{use:true,result})
-  })
+  try{
+    let invoice = req.session.invoice
+    user.getInvoice(invoice).then((result)=>{
+      res.status(200).render('user/success',{use:true,result})
+    })
+  }catch(error){
+    res.status(400).render('500')
+  }
+  
   
 })
 
 router.post('/change-product-quantity',(req,res)=>{
-  console.log(req.body);
-  user.changeQuantity(req.body).then(async(result)=>{
-    result.subtotal = await user.totalPrice(req.session.userData._id)
-    result.total = result.subtotal
-    owner = req.session.userData._id
-    await User.findOne({_id:owner}).then((coupon)=>{
-      if(coupon.Coupon){
-        console.log('555555');
-        console.log(coupon);
-        let tot= result.total
-        let discount =(tot*coupon.discount)/100
-        console.log('2222');
-        discountprice = (tot - discount)
-       result.discountprice = discountprice
-       console.log('cjkjjjjjjjjjjjjjjjjjjjjjjjjjj');
-       console.log(result);
-       res.status(200).json(result)
-      }else{
-        console.log('msmamamamamamm');
-        res.status(200).json(result)
-      }})
-    // await user.coupon(req.session.userData._id)
-   
-  })
+  try{
+    user.changeQuantity(req.body).then(async(result)=>{
+      result.subtotal = await user.totalPrice(req.session.userData._id)
+      result.total = result.subtotal
+      owner = req.session.userData._id
+      await User.findOne({_id:owner}).then((coupon)=>{
+        if(coupon.Coupon){
+          console.log('555555');
+          console.log(coupon);
+          let tot= result.total
+          let discount =(tot*coupon.discount)/100
+          console.log('2222');
+          discountprice = (tot - discount)
+         result.discountprice = discountprice
+         console.log('cjkjjjjjjjjjjjjjjjjjjjjjjjjjj');
+         console.log(result);
+         res.status(200).json(result)
+        }else{
+          console.log('msmamamamamamm');
+          res.status(200).json(result)
+        }})
+      
+     
+    })
+  }catch(error){
+    res.status(400).render('500')
+  }
+ 
 })
 router.post('/changepassword',async(req,res)=>{
-  person = req.session.userData
-  console.log(person);
-  await user.changePassword(req.body,person).then((result)=>{
-    res.status(200).redirect('/userprofile')
-  })
+  try{
+    person = req.session.userData
+    console.log(person);
+    await user.changePassword(req.body,person).then((result)=>{
+      res.status(200).redirect('/userprofile')
+    })
+  }catch(err){
+    res.status(400).render('500')
+  }
+ 
 })
 
 router.post('/remove',(req,res)=>{
-  person = req.session.userData
-  console.log('vvvvvvvvvvvvvvvvvvvv');
-  user.removeFromCart(req.body).then((result)=>{
-    res.status(200).json(result)
-  })
+  try{
+    person = req.session.userData
+    console.log('vvvvvvvvvvvvvvvvvvvv');
+    user.removeFromCart(req.body).then((result)=>{
+      res.status(200).json(result)
+    })
+  }catch(err){
+    res.status(400).render('500')
+  }
+  
 })
 
 router.post('/updateprofile',async(req,res)=>{
-  person = req.session.userData
-  await user.updateProfile(req.body,person).then((result)=>{
-    res.status(200).redirect('/userprofile')
-  })
+  try{
+    person = req.session.userData
+    await user.updateProfile(req.body,person).then((result)=>{
+      res.status(200).redirect('/userprofile')
+    })
+  }catch(error){
+    res.status(400).render('500')
+  }
+ 
 })
 
 router.get('/orders',(req,res)=>{
-  person = req.session.userData
-  owner = person._id
-  console.log(owner);
-  user.getOrder(owner).then((orders)=>{
-    
-  res.status(200).render('user/order',{orders,use:true,user:req.session.userData,categoryList:req.session.categoryList})
-  })
+  try{
+    person = req.session.userData
+    owner = person._id
+    console.log(owner);
+    user.getOrder(owner).then((orders)=>{
+      
+    res.status(200).render('user/order',{orders,use:true,user:req.session.userData,categoryList:req.session.categoryList})
+    })
+  }catch(error){
+    res.status(400).render('500')
+  }
+ 
   
 })
 
@@ -538,7 +576,7 @@ router.get('/cancel-order/:id', async (req, res) => {
       
       res.status(200).json({status:true})
   } catch (error) {
-      res.status(400). render('404');
+      res.status(400). render('500');
   }
 });
 
@@ -551,7 +589,7 @@ router.post('/applyCoupon',(req,res)=>{
       res.status(200).json({status:true})
     })
   }catch(error){
-    res.render('404')
+    res.render('500')
   }
 })
 
@@ -563,7 +601,7 @@ router.post('/search',(req,res)=>{
     })
   }catch(error)
   {
-    res.render('404')
+    res.render('500')
   }
 })
 
@@ -572,13 +610,23 @@ router.get('/AllCollections',async(req,res)=>{
   let items=  await Item.find()
   res.status(200).render('user/AllProduct',{use:true,items})
   }catch(error){
-    res.status(400).render('404')
+    res.status(400).render('500')
   }
 })
 
-// router.get('/whishlist',async(req,res)=>{
-//   res.status(200).render('user/wishlist')
-// })
+router.get('/whishlist',async(req,res)=>{
+ 
+  try{
+    let userid = req.session.userData._id
+    user.getWishlist(userid).then((products)=>{
+      res.status(200).render('user/wishlist',{user:req.session.userData,use:true,categoryList:req.session.categoryList,products})
+    })
+  }catch(error){
+    res.status(400).render('500')
+  }
+  
+  
+})
 
 router.get('/return-order/:id',async(req,res)=>{
   try {
@@ -591,7 +639,7 @@ router.get('/return-order/:id',async(req,res)=>{
     
     res.status(200).json({status:true})
 } catch (error) {
-    res.status(400). render('404');
+    res.status(400). render('500');
 }
 })
 
@@ -602,10 +650,51 @@ router.get('/deliveryAddress/:id',(req,res)=>{
 })
 
 router.post('/user-profileaddress',(req,res)=>{
-  let address= req.body
-  user.addAddress(address).then((response)=>{
-    res.status(200).redirect('/userprofile')
-  })
+  try{
+    let address= req.body
+    user.addAddress(address).then((response)=>{
+      res.status(200).redirect('/userprofile')
+    })
+  }catch(err){
+    res.status(400).render('500')
+  }
+ 
+})
+
+router.get('/addtoWishlist/:id',(req,res)=>{
+  try{
+    let product = req.params.id
+    let userid=req.session.userData._id
+    user.addtoWishList(product,userid).then((response)=>{
+      console.log(response);
+      res.status(200).redirect('/')
+    })
+  }catch(err){
+    res.status(400).render('500')
+  }
+ 
+})
+
+router.post('/removeFrom-wishlist',async(req,res)=>{
+  try {
+    
+    const pro = req.body.proId
+    const id = req.body.id
+    console.log(pro);
+    console.log(id);
+    await Wishlist.updateOne({_id:id},{
+      $pull:{
+        product:{
+          productId:pro
+        }
+      }
+    })
+    
+    
+    res.status(200).json({status:true})
+} catch (error) {
+    res.status(400). render('500');
+}
 })
 
 module.exports = router;

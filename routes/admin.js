@@ -25,6 +25,15 @@ const Coupons = require('../models/coupons');
 const { default: mongoose } = require('mongoose');
 
 
+
+function verifyLogin(req,res,next){
+    if(req.session.loggedIn){
+        next()
+    }else{
+        res.redirect('/admin')
+    }
+}
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
 
@@ -45,10 +54,10 @@ router.post('/', async (req, res) => {
 });
 
 
-router.get('/user', getusers());
+router.get('/user',verifyLogin, getusers());
 
 
-router.get('/adminpanel', async (req, res) => {
+router.get('/adminpanel',verifyLogin, async (req, res) => {
     let COD = await admin.codAmount()
     console.log(COD);
     let orders = await admin.totalOrders()
@@ -116,11 +125,12 @@ const getproducts = async (req, res) => {
     }
     // res.render('admin/admin-products')
 }
- router.get('/products', getproducts)
+ router.get('/products', verifyLogin, getproducts)
 
 
 
 router.get('/logout', async (req, res) => {
+    req.session.loggedIn=false;
     res.render('admin/admin-login',);
 })
 
@@ -135,7 +145,7 @@ router.get('/logout', async (req, res) => {
 //     res.status(500).send()
 // }
 // })
-router.get('/addproduct', async (req, res) => {
+router.get('/addproduct',verifyLogin, async (req, res) => {
     try{
         const categories = await Category.find({})
         const subCat = await sCategory.find({})
@@ -144,7 +154,7 @@ router.get('/addproduct', async (req, res) => {
             categories,subCat
         });
     }catch(error){
-        res.status(400)
+        res.status(400).render('500')
     }
    
 })
@@ -163,33 +173,21 @@ router.post('/addproduct', upload.single('Image'), async (req, res) => {
             image: req.file.filename,
             Qty:req.body.quantity
             
-            // image :{
-            //     data:fs.readFileSync(path.join( 'image/' + req.file.filename,'base64')),
-            //     Type:'image/png'
-            // }
+         
         })
-        // let image =req.files.Image
-        // image.mv('./images/'+id+'jpg',(err,done)=>{
-        // if(!err){
-        //     console.log('image uploaded sucessfully');
-        // }else{
-        //     console.log('not uploaded');
-        // }
-        // })
+      
 
         console.log(req.body.name);
         const yes = await newItem.save()
         res.status(201).render('admin/admin-index', {admi: true})
     } catch (error) {
-        res.status(400).send({
-            message: "error" + error
-        })
-        console.log(error)
+        res.status(400).render('500')
+        
     }
 })
 
 
-router.get('/block/:id', async (req, res, next) => {
+router.get('/block/:id', verifyLogin,async (req, res, next) => {
     try {
         const user = req.params.id
         await User.findByIdAndUpdate(user, {
@@ -200,12 +198,12 @@ router.get('/block/:id', async (req, res, next) => {
         res.redirect('/admin/user')
     } catch (error) {
         console.log(error)
-        res.status(400).send(error)
+        res.status(400).render('500')
     }
 })
 
 
-router.get('/unblock/:id', async (req, res, next) => {
+router.get('/unblock/:id',verifyLogin, async (req, res, next) => {
     try {
         const user = await User.findByIdAndUpdate(req.params.id, {
             $set: {
@@ -215,35 +213,36 @@ router.get('/unblock/:id', async (req, res, next) => {
         res.status(200).redirect('/admin/user')
     } catch (error) {
         console.log(error)
-        res.status(400).send(error)
+        res.status(400).render('500')
     }
 })
 
-router.get('/delete-product/:id', async (req, res) => {
+router.get('/delete-product/:id',verifyLogin, async (req, res) => {
     try {
         const product = req.params.id
         await Item.findByIdAndDelete(product);
         res.status(200).redirect('/admin/products');
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).render('500');
     }
 });
 
-router.get('/edit-product/:id', async (req, res) => {
+
+
+router.get('/edit-product/:id',verifyLogin, async (req, res) => {
     try {
         const items = await Item.findById(req.params.id)
         // const categories = await Category.find({})
         res.status(200).render('admin/admin-editproduct', {items, admi: true});
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).render('500');
     }
 })
 
 router.post('/edit-product/:id', upload.single('Image'), async (req, res) => {
     try {
 
-        console.log('\n\nhgfhfhgfghf' + req.params.id)
-        console.log(req.body.productname)
+        
         const product = await Item.updateOne({
             _id: req.params.id
         }, {
@@ -262,21 +261,25 @@ router.post('/edit-product/:id', upload.single('Image'), async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        res.status(400).send(error);
+        res.status(400).render('500');
     }
 })
 
-router.get('/orders',async(req,res)=>{
-    // const orders= await Order.find({})
-    admin.getAllOrder().then((orders)=>{
-        console.log(orders);
-        res.status(200).render('admin/admin-orders',{orders,admi:true})
-    })
+router.get('/orders',verifyLogin, async(req,res)=>{
+    try{
+        admin.getAllOrder().then((orders)=>{
+            console.log(orders);
+            res.status(200).render('admin/admin-orders',{orders,admi:true})
+        })
+    }catch(error){
+        res.status(400).render('500')
+    }
+   
 
     
 })
 
-router.get('/cancel-order/:id', async (req, res) => {
+router.get('/cancel-order/:id', verifyLogin, async (req, res) => {
     try {
         const order = req.params.id
 
@@ -286,10 +289,10 @@ router.get('/cancel-order/:id', async (req, res) => {
         
         res.status(200).redirect('/admin/orders');
     } catch (error) {
-        res.status(400).send(error);
+        res.status(400).render('500')
     }
   });
-  router.get('/deletecategory/:id',async(req,res)=>{
+  router.get('/deletecategory/:id',verifyLogin, async(req,res)=>{
      
     try{
             
@@ -299,30 +302,27 @@ router.get('/cancel-order/:id', async (req, res) => {
    
 }catch(error){
     console.log(error);
-    res.status(400).send(error);
+    res.status(400).render('500');
 }    
   })
 
-  router.get('/category',async(req,res)=>{
+  router.get('/category',verifyLogin, async(req,res)=>{
     try{
         controller.getCategories().then((categoryList)=>{
             console.log(categoryList);
              res.status(200).render('admin/admin-category',{admi:true,categoryList})
         })
     }catch(error){
-        res.status(400).send(error);
+        res.status(400).render('500');
     }
 })
-// router.get('/addcategory',async(req,res)=>{
-//     const categories = await Category.find({})
-//     res.render('admin/admin-addnewcategory',{admi:true})
-// })
+
 
 router.post('/addcategory',addCategory);
 
 router.post('/editcategories',editCategory);
 
-router.get('/subcategory',subCategory);
+router.get('/subcategory',verifyLogin, subCategory);
 
 // router.get('/addnewsubcategory',async(req,res)=>{
 //     res.status(200).render('admin/admin-addnew-subcategory',{admi:true})
@@ -330,7 +330,7 @@ router.get('/subcategory',subCategory);
 
 router.post('/addsubcategory',addsubCategory);
 
-router.get('/deleteSubCategory/:id',async(req,res)=>{
+router.get('/deleteSubCategory/:id',verifyLogin, async(req,res)=>{
     try{
         console.log(req.params.id);
         const subCat = req.params.id
@@ -340,18 +340,18 @@ router.get('/deleteSubCategory/:id',async(req,res)=>{
     }
     catch(error){
         console.log(error);
-        res.status(400)
+        res.status(400).render('500')
     }
 });
 
 router.post('/editSubCategories',editSubCategory);
 
-router.get('/offers',async(req,res)=>{
+router.get('/offers',verifyLogin, async(req,res)=>{
     try{
         let offer = await Offer.find({});
         res.status(200).render('admin/admin-offers',{admi:true,offer})
     }catch(error){
-
+        res.status(400).render('500')
     }
    
 })
@@ -363,16 +363,16 @@ router.post('/Offers',async(req,res)=>{
             res.status(200).json({result})
         })
     }catch{
-
+        res.status(400).render('500')
     }
 })
-router.get('/deleteOffer/:id',async(req,res)=>{
+router.get('/deleteOffer/:id',verifyLogin, async(req,res)=>{
     try{
         const offer = req.params.id
         await Offer.findByIdAndDelete(offer)
         res.status(200).json({status:true})   
     }catch(err){
-        res.status(400)
+        res.status(400).render('500')
     }
 })
 
@@ -384,31 +384,27 @@ router.post('/applyOffer',(req,res)=>{
             res.status(200).redirect('/admin/products')
         })
     }catch(err){
-
+        res.status(400).render('500')
     }
 })
 
 router.post('/applyCatOffer',(req,res)=>{
     try{
         console.log(req.body);
-        // admin.applyoffer(req.body).then(()=>{
-
-        //     res.status(200).redirect('/admin/subcategory')
-        // })
         res.status(200).redirect('admin/subcategory')
     }catch(err){
-
+        res.status(400).render('500')
     }
 })
 
-router.get('/couponOffers',(req,res)=>{
+router.get('/couponOffers',verifyLogin, (req,res)=>{
     try{
         admin.getCoupons().then((coupons)=>{
             
             res.status(200).render('admin/admin-coupon',{admi:true,coupons})
         })
     }catch(error){
-        res.status(400)
+        res.status(400).render('500')
     }
 })
 
@@ -419,21 +415,21 @@ router.post('/addCoupon',(req,res)=>{
             res.status(200).json({status:true})
         })
     }catch(error){
-        res.status(400)
+        res.status(400).render('500')
     }
 })
 
-router.get('/deleteCoupon/:id',async(req,res)=>{
+router.get('/deleteCoupon/:id',verifyLogin, async(req,res)=>{
     try{
         const coupon = req.params.id
         await Coupons.findByIdAndDelete({_id:coupon})
         res.status(200).json({status:true}) 
     }catch(error){
-        res.status(400)
+        res.status(400).render('500')
     }
 })
 
-router.get('/salesReport',async(req,res)=>{
+router.get('/salesReport',verifyLogin, async(req,res)=>{
     try{
         let totalAmount = await admin.data()
         admin.getAllOrder().then((list)=>{
@@ -441,7 +437,7 @@ router.get('/salesReport',async(req,res)=>{
             res.status(200).render('admin/admin-salesReport',{admi:true,list,totalAmount})
         })
     }catch(error){
-        res.status(400)
+        res.status(400).render('500')
     }
 })
 
@@ -457,21 +453,25 @@ let sum =await admin.Summ(from,end)
             res.status(200).render('admin/admin-DateReport',{list,admi:true,sum})
         })
     }catch{
-res.status(400)
+res.status(400).render('500')
     }
 })
 
 router.post('/updateStatus',async(req,res)=>{
-    console.log(req.body);
-    let stat = req.body.selected
-  let update=  await Order.updateOne({_id:mongoose.Types.ObjectId( req.body.ID)},{
-        $set:{
-            status:stat
-        }
-    }).then((rep)=>{
-    
-    res.status(201).json({status:true})
-    })
+    try{
+        let stat = req.body.selected
+        let update=  await Order.updateOne({_id:mongoose.Types.ObjectId( req.body.ID)},{
+              $set:{
+                  status:stat
+              }
+          }).then((rep)=>{
+          
+          res.status(201).json({status:true})
+          })
+    }catch(error){
+        res.status(400).render('500')
+    }
+   
 
     
 })

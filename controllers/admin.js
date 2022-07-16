@@ -18,14 +18,15 @@ module.exports={
                 users
             });
         } catch (error) {
-            res.status(400).send(error);
+            res.status(400).render('500');
         }
     
     },
     
     getAllOrder:()=>{
     return new Promise(async(response,reject)=>{
-        let order = await Order.aggregate([
+        try{
+            let order = await Order.aggregate([
                 {
                     $unwind:'$products'
                 },
@@ -75,103 +76,132 @@ module.exports={
         ]).sort({_id:-1})
         console.log(order.name);
         response(order)
+        }catch(error){
+            reject(error)
+        }
+        
     })
 },
 codAmount:()=>{
     return new Promise(async(resolve,reject)=>{
-        let total = await Order.aggregate([
-            {$match:{
-                paymentMethod:'cod'
-            }},
-            {
-                $group:{
-                    _id:null,
-                    
-                        count:{
-                            $sum:1
-                        }
-                    
+        try{
+            let total = await Order.aggregate([
+                {$match:{
+                    paymentMethod:'cod'
+                }},
+                {
+                    $group:{
+                        _id:null,
+                        
+                            count:{
+                                $sum:1
+                            }
+                        
+                    }
                 }
-            }
-        ])
-        console.log(total);
-        resolve(total[0].count)
+            ])
+            console.log(total);
+            resolve(total[0].count)
+        }catch(err){
+            reject(err)
+        }
+        
     })
 },
 totalOrders:()=>{
     return new Promise(async(resolve,reject)=>{
-        let total = await Order.aggregate([
+        try{
+            let total = await Order.aggregate([
           
-            {
-                $group:{
-                    _id:null,
-                    
-                        totalOrders:{
-                            $sum:1
-                        }
-                    
+                {
+                    $group:{
+                        _id:null,
+                        
+                            totalOrders:{
+                                $sum:1
+                            }
+                        
+                    }
                 }
-            }
-            
-        ])
-        console.log(total);
-        resolve(total[0].totalOrders)
+                
+            ])
+            console.log(total);
+            resolve(total[0].totalOrders)
+        }catch(err){
+            reject(err)
+        }
+       
     })
 },
 razorPay:()=>{
     return new Promise(async(resolve,reject)=>{
-        let total = await Order.aggregate([
-            {$match:{
-                paymentMethod:'razorpay'
-            }},
-            {
-                $group:{
-                    _id:null,
-                    
-                        RazorPay:{
-                            $sum:1
-                        }
-                    
+        try{
+            let total = await Order.aggregate([
+                {$match:{
+                    paymentMethod:'razorpay'
+                }},
+                {
+                    $group:{
+                        _id:null,
+                        
+                            RazorPay:{
+                                $sum:1
+                            }
+                        
+                    }
                 }
-            }
-        ])
-        console.log(total);
-        resolve(total[0].RazorPay)
+            ])
+            console.log(total);
+            resolve(total[0].RazorPay)
+        }catch(err){
+            reject(err)
+        }
+        
     })
 },
 userCount:()=>{
     return new Promise(async(resolve,reject)=>{
-        let total = await User.aggregate([
+        try{
+            let total = await User.aggregate([
           
-            {
-                $group:{
-                    _id:null,
-                    
-                        TotalUsers:{
-                            $sum:1
-                        }
-                    
+                {
+                    $group:{
+                        _id:null,
+                        
+                            TotalUsers:{
+                                $sum:1
+                            }
+                        
+                    }
                 }
-            }
-        ])
-        console.log(total);
-        resolve(total[0].TotalUsers)
+            ])
+            console.log(total);
+            resolve(total[0].TotalUsers)
+        }catch(err){
+            reject(err)
+        }
+        
     })
 },
 data:()=>{
     return new Promise (async(resolve,reject)=>{
-        let total = await Order.aggregate([
-            {
-                $group:{
-                    _id:null,
-                    totals:{
-                        $sum:"$bill"
-                    },
-                   
+        try{
+            let total = await Order.aggregate([
+                {
+                    $group:{
+                        _id:null,
+                        totals:{
+                            $sum:"$bill"
+                        },
+                       
+                    }
                 }
-            }
-        ])
-        resolve(total[0].totals)
+            ])
+            resolve(total[0].totals)
+        }catch(err){
+            reject(err)
+        }
+       
     })
 },
 
@@ -189,9 +219,9 @@ offer:()=>{
 },
 
 createOffer:(Data)=>{
-    try{
+    
     return new Promise(async(resolve,reject)=>{
-      
+        try{
             const offer = new Offer({
                 offerCode :Data.offercode,
                 discount : Data.discount
@@ -200,22 +230,25 @@ createOffer:(Data)=>{
             console.log(response);
             resolve(offercreated=true)
           })
+        }catch(error){
+            reject(error)
+        }
+           
           
 
        
     })
-}catch(err){
 
-}
 },
 
 
 
 applyoff:(Data)=>{
     
-    try{
+    
         return new Promise(async(resolve,reject)=>{
-           let ds= await Offer.findOne({_id:Data.offerid})
+            try{
+                let ds= await Offer.findOne({_id:Data.offerid})
                 let discount = ds.discount
 
          let pPrice =   await Item.findOne({_id:Data.itemid})
@@ -235,20 +268,23 @@ applyoff:(Data)=>{
                 }).then((response)=>{
                     resolve(response)
                 })
+            }catch(error){
+                reject(error)
+            }
+           
 
             
         })
-    }catch(error){
-
-    }
+    
 },
 
 
 applyoffer:(Data)=>{
     
-    try{
+    
         return new Promise(async(resolve,reject)=>{
-           let ds= await Offer.findOne({_id:Data.offerid})
+            try{
+                let ds= await Offer.findOne({_id:Data.offerid})
                 let discount = ds.discount
             console.log(discount);
             console.log('3696');
@@ -275,11 +311,13 @@ applyoffer:(Data)=>{
                     resolve(response)
                 })
 
+            }catch(error){
+                reject(error)
+            }
+           
             
         })
-    }catch(error){
-        res.status(400)
-    }
+    
 },
 
 getCoupons:()=>{
@@ -290,7 +328,7 @@ getCoupons:()=>{
             })
         })
     }catch(error){
-        res.status(400)
+        reject(error)
     }
 },
 addCoupons:(Data)=>{
@@ -304,7 +342,7 @@ addCoupons:(Data)=>{
             resolve(response)
            })
         }catch(error){
-            res.status(400)
+            reject(error)
         }
       
     })
@@ -368,63 +406,71 @@ getDateReport:(From,To)=>{
         console.log(reportArray);
         res(reportArray)
         }catch(error){
-            res.status(400)
+            rej(error)
         }
     })
 },
 Summ:(From,To)=>{
     return new Promise (async(resolve,reject)=>{
-        let total = await Order.aggregate([
-            {$match:{
-                createdAt:{$gte:From,$lte:To}
-            }},
-            {
-                $group:{
-                    _id:null,
-                    totals:{
-                        $sum:"$bill"
-                    },
-                   
+        try{
+            let total = await Order.aggregate([
+                {$match:{
+                    createdAt:{$gte:From,$lte:To}
+                }},
+                {
+                    $group:{
+                        _id:null,
+                        totals:{
+                            $sum:"$bill"
+                        },
+                       
+                    }
                 }
-            }
-        ])
-        resolve(total[0].totals)
+            ])
+            resolve(total[0].totals)
+        }catch(error){
+            reject(error)
+        }
+        
     })
 },
 TopSelling:()=>{
-    try{
+    
         return new Promise(async(resolve,reject)=>{
-           let top= await Order.aggregate([
-                {$unwind:'$products'},
-                {
-                    $group:{
-                        _id:'$products.productname',
-                        Qty:{$first:'$product.quantity'},
-                        
-                        sum:{
-                            $sum:'$products.quantity'
+            try{
+                let top= await Order.aggregate([
+                    {$unwind:'$products'},
+                    {
+                        $group:{
+                            _id:'$products.productname',
+                            Qty:{$first:'$product.quantity'},
+                            
+                            sum:{
+                                $sum:'$products.quantity'
+                            }
                         }
-                    }
-                },{
-                    $sort:{
-                        sum:-1
-                    }
-                },{
-                    $group:{
-                        _id:null,
-                        top_selling_products:{
-                            $push:'$_id',
-                           
+                    },{
+                        $sort:{
+                            sum:-1
                         }
-                    }
-                },
-            ])
-            console.log(top);
-            resolve(top)
+                    },{
+                        $group:{
+                            _id:null,
+                            top_selling_products:{
+                                $push:'$_id',
+                               
+                            }
+                        }
+                    },
+                ])
+                console.log(top);
+                resolve(top)
+            }
+           catch(error){
+            reject(error)
+           }
         })
-    }catch(error){
-        res.status(400).send('something went wrong')
-    }
+   
 }
 
 }

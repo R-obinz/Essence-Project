@@ -7,344 +7,372 @@ const mongoose = require('mongoose');
 const Order = require('../models/order');
 const res = require('express/lib/response');
 const Coupons = require('../models/coupons');
+const Wishlist = require('../models/wishlist');
 
 module.exports ={
     addtoCart:(owner,itemId)=>{
-        console.log('mmmmmmmmmmmmmmmmmmmmmmm');
-        return new Promise(async(resolve,reject)=>{
-           
-        const cart = await Cart.findOne({ owner });
-        const item = await Item.findOne({ _id: itemId });
-        const quantity = 1;
-    if (!item) {
-        res.status(404).send({ message: "item not found" });
-        return;
-    }   
-       if(item.status){
-        const price = item.offerPrice;
-        }else{
-            const price = item.price;
-        }
        
-        const productname = item.productname;
-        const image = item.image;
-            
-        //If cart already exists for user,
-        if (cart) {
-          console.log('b');
-            const itemIndex = cart.items.findIndex((item) => item.itemId ==  itemId);
-        //check if product exists or not
-        if (itemIndex > -1) {
-            let product = cart.items[itemIndex];
-            product.quantity += quantity;
-        //     cart.bill = cart.items.reduce((acc, curr) => {
-        //        return acc + curr.quantity * curr.price;
-        //    },0)
-        cart.items[itemIndex] = product;
-           await cart.save().then((response)=>{
-            resolve(response)
-        })
+        return new Promise(async(resolve,reject)=>{
+           try{
+            const cart = await Cart.findOne({ owner });
+            const item = await Item.findOne({ _id: itemId });
+            const quantity = 1;
+        if (!item) {
+            res.status(404).send({ message: "item not found" });
+            return;
+        }   
+           if(item.status){
+            const price = item.offerPrice;
+            }else{
+                const price = item.price;
+            }
            
-        } else {
-           cart.items.push({ itemId, productname, quantity,image });
-        //    cart.bill = cart.items.reduce((acc, curr) => {
-        //    return acc + curr.quantity * curr.price;
-        // },0)
-           await cart.save().then((response)=>{resolve(response)})
-
-        }
-        }else{
+            const productname = item.productname;
+            const image = item.image;
+                
+            //If cart already exists for user,
+            if (cart) {
+              console.log('b');
+                const itemIndex = cart.items.findIndex((item) => item.itemId ==  itemId);
+            //check if product exists or not
+            if (itemIndex > -1) {
+                let product = cart.items[itemIndex];
+                product.quantity += quantity;
             
-        const cart = await Cart.create({
-            owner,
-            items:[{itemId,productname,quantity,image}],
-            // bill:quantity*price
-        }).then((data)=>resolve(data))
-        }
+            cart.items[itemIndex] = product;
+               await cart.save().then((response)=>{
+                resolve(response)
+            })
+               
+            } else {
+               cart.items.push({ itemId, productname, quantity,image });
+            
+               await cart.save().then((response)=>{resolve(response)})
+    
+            }
+            }else{
+                
+            const cart = await Cart.create({
+                owner,
+                items:[{itemId,productname,quantity,image}],
+                // bill:quantity*price
+            }).then((data)=>resolve(data))
+            }
+           }catch(err){
+            reject(err)
+           }
+       
         })
     },
     getCart:(userId)=>{
         return new Promise(async(resolve,reject)=>{
-            let items =await Cart.aggregate([
-                {$match:{owner:mongoose.Types.ObjectId(userId)}},
-                
-                {$unwind:'$items'},
-                {
-                    $project:{
-                        item:'$items.itemId',
-                        quantity:'$items.quantity',
-                        method:'$paymentMethod',
-
-                    }
-                },{
-                    $lookup:{
-                        from:Item.collection.name,
-                        localField:'item',
-                        foreignField:'_id',
-                        as:'product'
-                    }
-                },
-                {$project:{
-                    method:1,item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
-                }},
-                {
-                    $project:
-                {   
-                    method:1,item:1,quantity:1,product:1,
-                    subtotal:{
-                        $cond:{
-                            if:('$product.status'),then:{
-                                
-                                     $sum:{$multiply:['$quantity','$product.offerPrice']}
+            try{
+                let items =await Cart.aggregate([
+                    {$match:{owner:mongoose.Types.ObjectId(userId)}},
                     
-                                
-                            },else: {
-                               
-                                  $sum:{$multiply:['$quantity','$product.price']}
-                    
+                    {$unwind:'$items'},
+                    {
+                        $project:{
+                            item:'$items.itemId',
+                            quantity:'$items.quantity',
+                            method:'$paymentMethod',
+    
+                        }
+                    },{
+                        $lookup:{
+                            from:Item.collection.name,
+                            localField:'item',
+                            foreignField:'_id',
+                            as:'product'
+                        }
+                    },
+                    {$project:{
+                        method:1,item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                    }},
+                    {
+                        $project:
+                    {   
+                        method:1,item:1,quantity:1,product:1,
+                        subtotal:{
+                            $cond:{
+                                if:('$product.status'),then:{
+                                    
+                                         $sum:{$multiply:['$quantity','$product.offerPrice']}
+                        
+                                    
+                                },else: {
+                                   
+                                      $sum:{$multiply:['$quantity','$product.price']}
+                        
+                                    
+                                }
+                                    
                                 
                             }
-                                
-                            
                         }
-                    }
-                  
-                }}
-               
-
-            ])
-            console.log('aaaaaaaaaaaaaaa');
-            console.log(items);
-            resolve(items)
+                      
+                    }}
+                   
+    
+                ])
+                
+                resolve(items)
+            }catch(err){
+                reject(err)
+            }
+           
         })
     },
    
 
 
     changeQuantity:(data)=>{
-        console.log('vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv');
+  
         data.count= parseInt(data.count)
         data.quantity = parseInt(data.quantity)
         
         console.log(data);
         return new Promise(async(resolve,reject)=>{
-        
-            if(data.count ==-1 && data.quantity ==1){
-                console.log('sssssdjgdigdyugyj');
-                await Cart.updateOne({_id:data.cart},{
-                   $pull:{
-                    items:{
-                        itemId:data.product
-                    }
-                   }
-                }).then((response)=>{
-                    console.log(response);
-                    resolve({removeProduct:true})
-                })
-            }else{
-                await Cart.updateOne({_id:data.cart,'items.itemId':data.product},{
-                    $inc:{
-                        
-                        'items.$.quantity':data.count
-                    },
-
-                }).then(()=>{
-                    resolve({status:true})
-                })
+            try{
+                if(data.count ==-1 && data.quantity ==1){
+                    console.log('sssssdjgdigdyugyj');
+                    await Cart.updateOne({_id:data.cart},{
+                       $pull:{
+                        items:{
+                            itemId:data.product
+                        }
+                       }
+                    }).then((response)=>{
+                        console.log(response);
+                        resolve({removeProduct:true})
+                    })
+                }else{
+                    await Cart.updateOne({_id:data.cart,'items.itemId':data.product},{
+                        $inc:{
+                            
+                            'items.$.quantity':data.count
+                        },
+    
+                    }).then(()=>{
+                        resolve({status:true})
+                    })
+                }
+            }catch(err){
+                reject(err)
             }
+        
+          
         })
 
 
     },
     totalPrice:(userid)=>{
         return new Promise(async(resolve,reject)=>{
-            let total = await Cart.aggregate([
+            try{
+                let total = await Cart.aggregate([
                 
-                {$match:{owner:mongoose.Types.ObjectId(userid)}},
-         
-                {$unwind:'$items'},
-                {
-                    $project:{
+                    {$match:{owner:mongoose.Types.ObjectId(userid)}},
+             
+                    {$unwind:'$items'},
+                    {
+                        $project:{
+                            
+                            item:'$items.itemId',
+                            quantity:'$items.quantity',
+                            owner:'$owner'
+                        }
+                    },{
+                        $lookup:{
+                            from:Item.collection.name,
+                            localField:'item',
+                            foreignField:'_id',
+                            as:'product'
+                        }
+                    },
+                    {
+                        $project:{
+                            item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                        }
+                    },
+                    {
+                        $project:{
+                            item:1,quantity:1,product:1, subtotal:{
+                            $cond:{
+                                if:('$product.status'),then:{
+                                    
+                                         $sum:{$multiply:['$quantity','$product.offerPrice']}
                         
-                        item:'$items.itemId',
-                        quantity:'$items.quantity',
-                        owner:'$owner'
-                    }
-                },{
-                    $lookup:{
-                        from:Item.collection.name,
-                        localField:'item',
-                        foreignField:'_id',
-                        as:'product'
-                    }
-                },
-                {
-                    $project:{
-                        item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
-                    }
-                },
-                {
-                    $project:{
-                        item:1,quantity:1,product:1, subtotal:{
-                        $cond:{
-                            if:('$product.status'),then:{
-                                
-                                     $sum:{$multiply:['$quantity','$product.offerPrice']}
-                    
-                                
-                            },else: {
-                               
-                                  $sum:{$multiply:['$quantity','$product.price']}
-                    
+                                    
+                                },else: {
+                                   
+                                      $sum:{$multiply:['$quantity','$product.price']}
+                        
+                                    
+                                }
+                                    
                                 
                             }
-                                
-                            
                         }
+            
+                        }
+                    },
+                    {
+                        $group:{
+                            _id:null,
+                            total:{$sum:'$subtotal'
+                               }
+                        } 
                     }
-        
-                    }
-                },
-                {
-                    $group:{
-                        _id:null,
-                        total:{$sum:'$subtotal'
-                           }
-                    } 
+                ])
+                
+                if(total[0]){
+                    resolve(total[0].total)
+                }else{
+                    resolve(0)
                 }
-            ])
-            console.log('totalllllllllllllllllllllllllllllllllllllllll');
-            console.log(total);
-            if(total[0]){
-                resolve(total[0].total)
-            }else{
-                resolve(0)
+            }catch(error){
+                reject(error)
             }
+            
         })
     },
     checkOut:(owner)=>{
          return new Promise(async(resolve,reject)=>{
-            let products =await Cart.aggregate([
-                {$match:{owner:mongoose.Types.ObjectId(owner)}},
-                {$unwind:'$items'},
-                {
-                    $project:{
-                        item:'$items.itemId',
-                        quantity:'$items.quantity',
-                        status:'$status',
-                        orderType:'$paymentMethod'
-                    }
-                },{
-                    $lookup:{
-                        from:Item.collection.name,
-                        localField:'item',
-                        foreignField:'_id',
-                        as:'product'
-                    }
-                },
-                {$project:{
-                    paymentMethod:1,item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
-                }},
-        
-                {
-                    $project:{
-                        paymentMethod:1,item:1,quantity:1,product:1, subtotal:{
-                        $cond:{
-                            if:('$product.status'),then:{
-                                
-                                     $sum:{$multiply:['$quantity','$product.offerPrice']}
-                    
-                                
-                            },else: {
-                               
-                                  $sum:{$multiply:['$quantity','$product.price']}
-                    
+            try{
+                let products =await Cart.aggregate([
+                    {$match:{owner:mongoose.Types.ObjectId(owner)}},
+                    {$unwind:'$items'},
+                    {
+                        $project:{
+                            item:'$items.itemId',
+                            quantity:'$items.quantity',
+                            status:'$status',
+                            orderType:'$paymentMethod'
+                        }
+                    },{
+                        $lookup:{
+                            from:Item.collection.name,
+                            localField:'item',
+                            foreignField:'_id',
+                            as:'product'
+                        }
+                    },
+                    {$project:{
+                        paymentMethod:1,item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                    }},
+            
+                    {
+                        $project:{
+                            paymentMethod:1,item:1,quantity:1,product:1, subtotal:{
+                            $cond:{
+                                if:('$product.status'),then:{
+                                    
+                                         $sum:{$multiply:['$quantity','$product.offerPrice']}
+                        
+                                    
+                                },else: {
+                                   
+                                      $sum:{$multiply:['$quantity','$product.price']}
+                        
+                                    
+                                }
+                                    
                                 
                             }
-                                
-                            
+                        }
+            
                         }
                     }
-        
-                    }
-                }
+                    
+    
+                ])
                 
-
-            ])
-            console.log('ashanejanganjagajaga');
-            console.log(products);
-            resolve(products)
+                resolve(products)
+            }catch(error){
+                reject(error)
+            }
+      
         })
     },
 
     getOrder:(owner)=>{
         return new Promise(async(resolve,reject)=>{
-            let orders = await Order.aggregate([
-                {$match:{user:mongoose.Types.ObjectId(owner)}},
+            try{
+                let orders = await Order.aggregate([
+                    {$match:{user:mongoose.Types.ObjectId(owner)}},
+                
+                    {
+                        $unwind:'$products'
+                    },{
+                        $project:{
+                            item:'$products.itemId',
+                            quantity:'$products.quantity',
+                            status:'$status',
+                            paymentMethod:'$paymentMethod',
+                            address:'$deliveryDetails.address',
+                            phone:'$deliveryDetails.mobilenumber',
+                            created: { $dateToString: {
+                                format: "%d-%m-%Y",
+                                date: "$createdAt"
+                              }},
+                        
+                            updated: { $dateToString: {
+                                format: "%d-%m-%Y",
+                                date: "$updatedAt"
+                              }}
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:Item.collection.name,
+                            localField:'item',
+                            foreignField:'_id',
+                            as:'product'
+                        }
+                    },{
+                        $project:{
+                            created:1,updated:1,phone:1,address:1,paymentMethod:1,status:1,item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                        }
+                    }, {
+                        $project:{
+                            created:1,updated:1,phone:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,product:1, subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
             
-                {
-                    $unwind:'$products'
-                },{
-                    $project:{
-                        item:'$products.itemId',
-                        quantity:'$products.quantity',
-                        status:'$status',
-                        paymentMethod:'$paymentMethod',
-                        address:'$deliveryDetails.address',
-                        phone:'$deliveryDetails.mobilenumber',
-                        created: { $dateToString: {
-                            format: "%d-%m-%Y",
-                            date: "$createdAt"
-                          }},
-                    
-                        updated: { $dateToString: {
-                            format: "%d-%m-%Y",
-                            date: "$updatedAt"
-                          }}
+                        }
                     }
-                },
-                {
-                    $lookup:{
-                        from:Item.collection.name,
-                        localField:'item',
-                        foreignField:'_id',
-                        as:'product'
-                    }
-                },{
-                    $project:{
-                        created:1,updated:1,phone:1,address:1,paymentMethod:1,status:1,item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
-                    }
-                }, {
-                    $project:{
-                        created:1,updated:1,phone:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,product:1, subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
-        
-                    }
-                }
-            ]).sort({_id:-1})
-            console.log(orders);
-            resolve(orders)
+                ]).sort({_id:-1})
+                console.log(orders);
+                resolve(orders)
+            }catch(error){
+                reject(error)
+            }
+            
         })
     },
 
     changePassword:(data,person)=>{
        
      return new Promise(async(resolve,reject)=>{
-        
-       const oldpassword = data.oldpassword
-        console.log(oldpassword);
-        newpassword = await bcrypt.hash(data.newpassword,3) 
-       const password = person.password
-       const user = person._id
-        console.log(password);
-        const isMatch = await bcrypt.compare(oldpassword,password)
-        if(isMatch){
-            console.log('yessssssssssssssssssssssssssssss')
-            await User.findByIdAndUpdate(user,{
-                $set: {
-                    password:newpassword
-                }
-            }).then((response)=>{resolve(response)})
+        try{
+            const oldpassword = data.oldpassword
+            console.log(oldpassword);
+            newpassword = await bcrypt.hash(data.newpassword,3) 
+           const password = person.password
+           const user = person._id
+            console.log(password);
+            const isMatch = await bcrypt.compare(oldpassword,password)
+            if(isMatch){
+                console.log('yessssssssssssssssssssssssssssss')
+                await User.findByIdAndUpdate(user,{
+                    $set: {
+                        password:newpassword
+                    }
+                }).then((response)=>{resolve(response)})
+            }
+        }catch(error){
+            reject(error)
         }
+        
+      
             
         
      })
@@ -353,8 +381,8 @@ module.exports ={
 
     updateProfile:(data,person)=>{
         return new Promise(async(resolve,reject)=>{
-
-            newName = data.name
+            try{
+                newName = data.name
             newMail = data.email
             newMobile = data.mobilenumber
             oldName = person.name
@@ -376,71 +404,85 @@ module.exports ={
                 resolve(response)
             })
 
+            }catch(error){
+                reject(error)
+            }
+
+            
         })
     },
 
     getInvoice:(data)=>{
         return new Promise(async(res,rej)=>{
-            let details = await Order.aggregate([
-                {
-                    $match:{_id:mongoose.Types.ObjectId(data)}
-                },{
-                    $unwind:'$products'
-                },{
-                    $project:{
-                        firstname:'$deliveryDetails.firstname',
-                        lastname:'$deliveryDetails.lastname',
-                        email:'$deliveryDetails.email',
-                        address:'$deliveryDetails.address',
-                        mobile:'$deliveryDetails.mobilenumber',
-                        paymentMethod:'$paymentMethod',
-                        item:'$products.itemId',
-                        quantity:'$products.quantity',
-                        productname:'$product.productname',
-                        total:'$bill'
-
-                    }
-                },{
-                    $lookup:{
-                        from:Item.collection.name,
-                        localField:'item',
-                        foreignField:'_id',
-                        as:'product'
-                    }
-                    
-                },
-                {
-                    $project:{
-                        firstname:1,lastname:1,email:1,address:1,mobile:1,paymentMethod:1,productname:1,quantity:1,total:1,product:{$arrayElemAt:['$product',0]}
-                    }
-                },{
-                    
+            try{
+                let details = await Order.aggregate([
+                    {
+                        $match:{_id:mongoose.Types.ObjectId(data)}
+                    },{
+                        $unwind:'$products'
+                    },{
                         $project:{
-                            firstname:1,lastname:1,email:1,address:1, mobile:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,total:1,product:1, subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
-            
+                            firstname:'$deliveryDetails.firstname',
+                            lastname:'$deliveryDetails.lastname',
+                            email:'$deliveryDetails.email',
+                            address:'$deliveryDetails.address',
+                            mobile:'$deliveryDetails.mobilenumber',
+                            paymentMethod:'$paymentMethod',
+                            item:'$products.itemId',
+                            quantity:'$products.quantity',
+                            productname:'$product.productname',
+                            total:'$bill'
+    
                         }
-                    
-                }
-            ])
-            console.log('kkkkkkkkkkkkkkkkkkk');
-            console.log(details)
-            res(details)
+                    },{
+                        $lookup:{
+                            from:Item.collection.name,
+                            localField:'item',
+                            foreignField:'_id',
+                            as:'product'
+                        }
+                        
+                    },
+                    {
+                        $project:{
+                            firstname:1,lastname:1,email:1,address:1,mobile:1,paymentMethod:1,productname:1,quantity:1,total:1,product:{$arrayElemAt:['$product',0]}
+                        }
+                    },{
+                        
+                            $project:{
+                                firstname:1,lastname:1,email:1,address:1, mobile:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,total:1,product:1, subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
+                
+                            }
+                        
+                    }
+                ])
+              
+                res(details)
+            }
+           catch(error){
+            reject(error)
+           }
         })
     },
 
     removeFromCart:(data)=>{
         return new Promise(async(res,rej)=>{
-            console.log(data);
+            try{
+                await Cart.updateOne({_id:data.cart},{
+                    $pull:{
+                     items:{
+                         itemId:data.product
+                     }
+                    }
+                 }).then((response)=>{
+                    res(response)
+                 })
+            }catch(error){
+                rej(error)
+            }
+           
             
-            await Cart.updateOne({_id:data.cart},{
-                $pull:{
-                 items:{
-                     itemId:data.product
-                 }
-                }
-             }).then((response)=>{
-                res(response)
-             })
+           
         })
     },
 
@@ -471,7 +513,7 @@ module.exports ={
 
              
             }catch(error){
-                res.status(400)
+                reject(error)
             }
         })
     },
@@ -482,7 +524,7 @@ module.exports ={
                     resolve(result)
                 })
             }catch(error){
-                res.status(400)
+                reject(error)
             }
         })
     },
@@ -493,8 +535,7 @@ module.exports ={
                let pro= await Item.find({productname:{$regex:Data,$options:'$i'}})
                 resolve(pro)
             }catch(err){
-                console.log(err);
-                resolve(0)
+                reject(err)
             }
         })
     },
@@ -519,7 +560,74 @@ module.exports ={
                     resolve(response)
                 })
             }catch(error){
-                res.status(400)
+                reject(error)
+            }
+        })
+    },
+    addtoWishList:(Id,userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            try{
+                let wishlist = await Wishlist.findOne({user:userId})
+                if(wishlist){
+                
+                    await Wishlist.updateOne(wishlist,{
+                        $push:{
+                            product:{
+                                productId:Id
+                            }
+                        }
+                    }).then((response)=>{
+                        console.log(response);
+                        resolve(response)
+                    })
+                }else{
+                    const list = await Wishlist.create({
+                        user:userId,
+                        product:[{productId:Id}],
+                        
+                    }).then((response)=>{
+                        resolve(response)
+                    })
+                    
+                    
+                }
+            }catch(error){
+                reject(error)
+            }
+        })
+    },
+    getWishlist:(Id)=>{
+        return new Promise(async(resolve,reject)=>{
+            try{
+               let list= await Wishlist.aggregate([
+                    {$match:{
+                        user:mongoose.Types.ObjectId(Id)
+                    }},
+                    {
+                        $unwind:'$product'
+                    },
+                    {
+                        $project:{
+                            product:'$product.productId'
+                        }
+                    },{
+                        $lookup:{
+                            from:Item.collection.name,
+                            localField:'product',
+                            foreignField:'_id',
+                            as:'products'
+                        }
+                    },{
+                        $project:{
+                            product:{$arrayElemAt:['$products',0]}
+                        }
+                    }
+                ])
+                    console.log(list);
+                    resolve(list)
+                
+            }catch(error){
+                reject(error)
             }
         })
     }

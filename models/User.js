@@ -110,45 +110,5 @@ userSchema.pre('save',async function (next){
     next()
 })
 
-// userSchema.statics.findByIdAndUpdate= async(_id)=>{
-//     const user = await User.findByIdAndUpdate({_id},{$set:{status:true}})
-    
-//     if(error){
-//         console.log('error'+error);
-//     }
-//     return user
-
-// }
-
-
-
-// userSchema.methods.addToCart = async function(productId) {
-//     const product = await Item.findById(productId);
-//     if (product) {
-//         const cart = this.cart;
-//         const isExisting = cart.items.findIndex(objInItems => new String(objInItems.productId).trim() === new String(product._id).trim());
-//         if (isExisting >= 0) {
-//             cart.items[isExisting].qty += 1;
-//         } else {
-//             cart.items.push({ productId: product._id, qty: 1 });
-//         }
-//         if (!cart.totalPrice) {
-//             cart.totalPrice = 0;
-//         }
-//         cart.totalPrice += product.price;
-//         return this.save();
-//     }
-
-// };
-
-
-// userSchema.methods.removeFromCart = function(productId) {
-//     const cart = this.cart;
-//     const isExisting = cart.items.findIndex(objInItems => new String(objInItems.productId).trim() === new String(productId).trim());
-//     if (isExisting >= 0) {
-//         cart.items.splice(isExisting, 1);
-//         return this.save();
-//     }
-// }
 const User = mongoose.model('User', userSchema)
 module.exports = User

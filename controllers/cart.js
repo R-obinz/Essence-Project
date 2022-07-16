@@ -2,24 +2,21 @@ const async = require("hbs/lib/async")
 const Cart = require("../models/cart")
 const product= require('../models/Item')
 
-// module.exports = {
 
-// addtoCart:(itemId,userId)=>{
-//     return new Promise (async(resolve,reject)=>{
-//         let userCart = await Cart.findOne({user:obje})
-//     })
-// }
-    
-// }
 
 exports.addToCart = (prod,userId ) => {
 
     return new Promise(async(resolve,reject)=>{
-        console.log(req.body.id)
-        req.user.addToCart(req.body.id)
-        .then((response) => {
-            resolve(response)
-        })
+        try{
+            
+            req.user.addToCart(req.body.id)
+            .then((response) => {
+                resolve(response)
+            })
+        }catch(error){
+            reject(error)
+        }
+       
     })
    
 }
@@ -33,7 +30,7 @@ exports.getCart = (req, res, next) => {
             console.log(user);
             res.render('cart', { cart: user.cart, pageTitle: 'Shopping Cart Detail', path: '/cart', name: 'Edward' });
         })
-        .catch(err => console.log(err));
+        .catch(err => res.render('500'));
 }
 
 exports.deleteInCart = (req, res, next) => {

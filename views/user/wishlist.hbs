@@ -1,67 +1,51 @@
-<section class="shopping-cart spad ">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-3"></div>
-            <div class="col-lg-8">
-                <div class="shopping_cart_table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Wish List</th>
 
-                                <th>Total</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {{#if list.[0].wishProduct}}
-                            {{#each list.[0].wishProduct}}
-                            <tr>
-                                <td class="product_cart_item">
-                                    <div class="product_cartitem_pic">
-                                        <a href="/ProDetails/{{this._id}}"><img style="width: 50px;"
-                                                src="/pro-img/{{this._id}}.jpg" alt=""></a>
-                                    </div>
-                                    <div class="product_cartitem_text">
-                                        <h6>{{this.name}}&nbsp;&nbsp;<span class="text-success"
-                                                style="font-size: small;">{{#if
-                                                offername}}{{this.offername}}%{{/if}}</span></h6>
-                                        <a><button class="text-white rounded"
-                                                style="border: none;background-color:rgba(1, 1, 17, 0.878);font-size: smaller;"
-                                                onclick="addToCart('{{this._id}}')">+ Add to Cart</button></a>
-                                        {{!-- <h5>₹{{this.price}}</h5> --}}
-                                    </div>
-                                </td>
-                                <td class="cart__price">₹{{this.price}}</td>
-                                <td onclick="cancel('{{this.id}}')" class="cart_close"><i class="fa fa-close"></i>
-                                </td>
-                            </tr>
-                            {{/each}}
-                            {{else}}
-                            <tr>
-                                <td class="text-center">
-                                    <h4 class="font-weight-bold">WISHLIST IS EMPTY</h4><img style="width: 10rem;"
-                                        src="/img/icon/empty.png" alt="">
-                                </td>
-                            </tr>
-                            {{/if}}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-6">
-                        <div class="continue__btn">
-                            <a href="/shop">Continue Shopping</a>
-                        </div>
+ <div class="breadcumb_area bg-img" style="background-image: url(/img/bg-img/breadcumb.jpg);">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12">
+                    <div class="page-title text-center">
+                        <span style=" font-family: SourceSansPro;">My</span>
+                        <h2 style="font-family: Lora;">Wishlist</h2>
                     </div>
-                    {{!-- <div class="col-lg-6 col-md-6 col-sm-6">
-                        <div class="continue_btn update_btn">
-                            <a href="#"><i class="fa fa-spinner"></i> Update cart</a>
-                        </div>
-                    </div> --}}
                 </div>
             </div>
         </div>
     </div>
+<table class="table" style="width: 85%; margin-left:5rem;font-family: 'Times New Roman', Times, serif;" >
+  <thead>
+    <tr>
+   
+      <th scope="col">Product</th>
+      <th scope="col">Price</th>
+      <th scope="col">Option</th>
+       <th scope="col">Remove</th>
+    </tr>
+  </thead>
+  <tbody >
+    {{#each products}}
+    <tr>
+      
+      <td><img style=" height:100px" src="/images/{{product.image}}"></td>
+      <td>{{product.price}}</td>
+      <td > <div class="add-to-cart-btn">
+        <button style="background-color: #0315ff;color: aliceblue;" onclick="addtoCart('{{product._id}}')" class="btn essence-btn">Add to Cart</button>
+    </div></td>
+      <td>
+        <div class="add-to-cart-btn">
+        <button style="background-color: #e49013e1;color: aliceblue;" onclick="removeFromWishlist('{{product._id}}','{{this._id}}')" class="btn essence-btn">Remove</button>
     </div>
-</section>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<style>
+    .table td, .table th {
+    padding: 1.75rem;
+    vertical-align: text-top;
+    border-top: 1px solid #dee2e6;
+}
+</style>
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

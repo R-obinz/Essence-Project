@@ -4,25 +4,7 @@ const subCategory = require('../models/subcategory');
 const { default: mongoose } = require('mongoose');
 const Offer = require('../models/offers');
 
-// function createCategories(categories,parentId=null){
-//     const categoryList = [];
-//     let category;
-//     if(parentId == null){
-//        category= categories.filter(cat => cat.parentId == undefined);
-//     }else{
-//         category = categories.filter(cat => cat.parentId ==parentId )
-//     }
 
-//     for(let cate of category){
-//         categoryList.push({
-//             _id:cate._id,
-//             categoryname: cate.categoryname,
-//             slug:cate.slug,
-//             children: createCategories(categories,cate._id)
-//         })
-//     }
-//     return categoryList
-// }
 
 
 
@@ -32,7 +14,6 @@ exports.addCategory =async(req,res)=>{
         const cat = new Category({
             categoryname:req.body.categoryname,
             slug:slugify(req.body.categoryname)
-            
             
           })
           const create = await cat.save();
@@ -55,11 +36,9 @@ exports.addsubCategory =async(req,res)=>{
         })
        
       const reg= await subCat.save().then(async(result)=>{
-        console.log('+++++aaaa');
-      console.log(result);
+        
       let ids=result._id
-      console.log(ids);
-      console.log('ssa255');
+     
       console.log(result.parentCategory);
       let vari= await Category.updateOne(
         { _id: result.parentCategory },  
@@ -76,43 +55,21 @@ exports.addsubCategory =async(req,res)=>{
       })
         
     }catch(error){
-        res.status(400).send('already exsists');
+        res.status(400).render('500');
     }
 }
 exports.getCategories = async(req,res)=>{
      
       return new Promise(async(resolve,reject)=>{
-//        const categoryList= await Category.aggregate([
-//         {
-//             $unwind:'$subcategory'
-//         },
-    
-//         {
-//             $project:{
-                
-//                 categoryname:'$categoryname',
-//                 subcatid:'$subcategory',
-//              }
-//         },
-//         {
-//             $lookup:{
-//                 from:subCategory.collection.name,
-//                 localField:'subcatid',
-//                 foreignField:'_id',
-//                 as:'subcat'
-//             }
-//         },
-//         {
-//             $project:{
-//                 categoryname:1,subcat:{$arrayElemAt:['$subcat',0]}
-//             }
-//         }
-    
-// ])
-       let categoryList = await Category.find({});
+            try{
+                let categoryList = await Category.find({});
 
-       console.log(categoryList);
-        resolve(categoryList);
+                console.log(categoryList);
+                 resolve(categoryList);
+            }catch(error){
+                reject(error)
+            }
+       
     })
 
     
@@ -147,7 +104,7 @@ exports.subCategory =async(req,res)=>{
       
 
     }catch(error){
-
+        res.status(400).render('500')
     }
 }
 
