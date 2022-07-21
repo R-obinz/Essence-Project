@@ -128,7 +128,7 @@ router.get('/productdetails/:id',async(req,res)=>{
   res.render('user/single-product-details',{use:true,product,user:req.session.userData,categoryList:req.session.categoryList});
   
   }catch(error){
-    res.status(400).redirect('/')
+    res.status(400).render('500')
   }
    
 })

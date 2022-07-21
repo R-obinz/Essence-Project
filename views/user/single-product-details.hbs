@@ -1,23 +1,21 @@
 
 
-
+   
     <!-- ##### Single Product Details Area Start ##### -->
-    <section class="single_product_details_area d-flex align-items-center">
+    <section class="single_product_details_area d-flex align-items-center" style="margin-top: 56px;">
            
         <!-- Single Product Thumb -->
-        <div class="single_product_thumb clearfix" >
-             {{#each product}}
-            <div class="product" >
-                <img src="/images/{{this.image}}" alt="">
-                {{!-- <img src="" alt="">
-                <img src="" alt=""> --}}
-        
+        <div class="single_product_thumb clearfix"  >
+           
+            <div class="product" id="img-container" >
+                <img src="/images/{{product.image}}"  alt="">
+                
             </div>
              
-            {{/each}}
+           
 
         </div>
-            
+          
         <!-- Single Product Description -->
 
         <div class="single_product_desc clearfix" style="margin-left: -58px; font-family: SourceSansPro;">
@@ -86,7 +84,20 @@
         </div>
     </footer>
     <!-- ##### Footer Area End ##### -->
+     <script src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js" type="application/javascript"></script>
+ <script>
+    
+var options = {
+    width: 400,
+    zoomWidth: 250,
+    offset: {vertical: 0, horizontal: 3},
+    scale:.5
+};
 
+
+new ImageZoom(document.getElementById("img-container"), options);
+
+</script>
 
 <style>
     
@@ -212,3 +223,5 @@ body{
 
 
 </style>
+
+ 
