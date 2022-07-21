@@ -41,6 +41,7 @@ module.exports={
                         user:'$user',
                         email:'$deliveryDetails.email',
                         phone:'$deliveryDetails.mobilenumber',
+                        discount:'$Discount',
                         Date: { $dateToString: {
                             format: "%d-%m-%Y",
                             date: "$createdAt"
@@ -64,11 +65,11 @@ module.exports={
                 },
                 {
                     $project:{
-                        Date:1,phone:1,email:1,address:1,paymentMethod:1,status:1,item:1,quantity:1,name:{$arrayElemAt:['$name',0]},product:{$arrayElemAt:['$product',0]}
+                        discount:1, Date:1,phone:1,email:1,address:1,paymentMethod:1,status:1,item:1,quantity:1,name:{$arrayElemAt:['$name',0]},product:{$arrayElemAt:['$product',0]}
                     }
                 },{
                     $project:{
-                       Date:1,phone:1,email:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,product:1,name:1,subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
+                        discount:1, Date:1,phone:1,email:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,product:1,name:1,subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
         
                     }
                 }

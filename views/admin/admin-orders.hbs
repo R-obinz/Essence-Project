@@ -1,17 +1,16 @@
+ 
 
 <table class="table">
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Username</th>
-      <th scope="col">Email</th>
-      <th scope="col">Phone</th>
-      <th scope="col">Date</th>
-      <th scope="col">Products</th>
-      <th scope="col">Total</th>
-      <th scope="col">PaymentMethod</th>
-      <th scope="col">Status</th>
-      <th scope="col">Action</th>
+      <th scope="col">ITEMS</th>
+      <th scope="col">DELIVERY</th>
+      <th scope="col">DATE</th>
+      <th scope="col">TOTAL</th>
+      <th scope="col">PAYMENTMETHOD</th>
+      <th scope="col">STATUS</th>
+      <th scope="col">ACTION</th>
     </tr>
   </thead>
   <tbody>
@@ -20,41 +19,18 @@
     <tr>
         
       <th scope="row">{{math @index "+"1}}</th>
-      <td>{{this.name.name}}</td>
-      <td>{{this.email}}</td>
-      <td>{{this.phone}}</td>
+      <td> <a href="" data-toggle="modal" data-target="#b{{this._id}}">{{this.product.productname}}</a></td>
+      <td> {{this.name.name}} <br> {{this.address}} <br>{{this.email}} <br>{{this.phone}}</td>
+      
       <td>{{this.Date}}</td>
-      <td>{{this.product.productname}}</td>
       <td>{{this.subtotal}}</td>
       <td>{{this.paymentMethod}}</td>
       <td>{{this.status}}</td>
-      {{!-- {{/each}} --}}
       
-      <td>
-      {{!-- <a href="/admin/cancel-order/{{this._id}}" onclick= " return confirm('are you sure to cancel {{this.name}}')" class="btn btn-danger">Cancel</a> --}}
-      {{!-- <span class="p-relative">
-                        <button class="dropdown-btn transparent-btn" type="button" title="More info">
-                          <div class="sr-only">More info</div>
-                          <i data-feather="more-horizontal" aria-hidden="true"></i>
-                        </button>
-                        <ul class="users-item-dropdown dropdown">
-                          <select onchange="status(this.value)" name="select" id="category">
-                          <li><a href="/admin/cancel-order/{{this._id}}" onclick="return confirm('are you sure to cancel{{this.name}}')" >cancel</a></li>
-                          <li><a href="##">delivered</a></li>
-                          <li><a href="##"></a></li>
-                          </select>
-                        </ul>
-                      </span> --}}
-   {{!-- <select class="form-select" id="category" aria-label="Default select example">
-   <option selected>Open this select menu</option>
-  <option value="1">Cancel</option>
-  <option value="2">Delivered</option>
-  <option value="3">Shipped</option>
-</select> --}}
 {{#ifCound this.status 'Placed'}}
 
 
-<td> <select onchange="status(this.value,'{{this._id}}','{{this.name._id}}')" class="custom-select tm-select-accounts"
+<td> <select onchange="status(this.value,'{{this._id}}','{{this.name._id}}')" class="custom-select tm-select-accounts" style="width: 90px ;"
                             id="category" name="offer" >
                             <option selected>{{this.status}}</option>
                             <option value="SHIPPED">SHIPPED</option>
@@ -65,7 +41,7 @@
                         </select >
                     </td>
                       
-      </td>
+      
       {{else}}{{#ifCound this.status 'SHIPPED'}}
       <td>
         <select onchange="status(this.value,'{{this._id}}','{{this.name._id}}')" class="custom-select tm-select-accounts"
@@ -81,7 +57,113 @@
       {{/ifCound}}
     </tr>
 
+
+        <!-- Modal -->
+    
+<div class="modal fade" id="b{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle" style="font-family: 'Times New Roman', Times, serif;">Delivery Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6 style="font-family: 'Times New Roman', Times, serif;">Delivery Address</h6>
+        {{address}}
+        <br>
+       <span>MobileNumber:{{phone}}</span> 
+      </div>
+      <div class="container">
+        <h6 style="font-family: 'Times New Roman', Times, serif;">Product Details</h6>
+        <div class="row d-flex justify-content-between align-items-center" style="margin-top: 10px;">
+                
+              <div class="col-md-2 col-lg-2 col-xl-2">
+               
+                  <img
+                  src="/images/{{this.product.image}}"
+                  class="img-fluid rounded-3" alt="" style="height: 80px;">
+                
+                
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-3">
+               {{this.product.productname}}
+               <br>
+              Qty: {{this.quantity}}
+              Price:{{this.product.price}}
+              Discount:{{this.discount}}
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                 subtotal: {{this.subtotal}}
+              </div>
+               <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                {{#ifCound status 'Placed'}}
+                  {{this.created}}
+                  {{else}}
+                  {{this.updated}}
+                  {{/ifCound}}
+              </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      
+      </div>
+    </div>
+  </div>
+</div>
+
       {{/each}}
   </tbody>
 </table>
 </div>
+
+<style>
+  .nice-select {
+    -webkit-tap-highlight-color: transparent;
+    background-color: #fff;
+    border-radius: -4px;
+    border: solid 1px #e8e8e8;
+    box-sizing: border-box;
+    clear: both;
+    cursor: pointer;
+    display: block;
+    float: left;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: normal;
+    height: 42px;
+    line-height: 40px;
+    outline: none;
+    padding-left: 18px;
+    padding-right: 30px;
+    position: relative;
+    text-align: left !important;
+    -webkit-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    white-space: nowrap;
+    width: 385px;
+    margin-top: 5px;
+}
+.custom-select {
+    display: inline-block;
+    width: 100%;
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 1.75rem 0.375rem 0.75rem;
+    line-height: 1.5;
+    color: #495057;
+    vertical-align: middle;
+    background: #fff url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E) no-repeat right 0.75rem center;
+    background-size: 8px 10px;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+</style>

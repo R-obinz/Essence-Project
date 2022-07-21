@@ -46,7 +46,7 @@ router.get('/', async(req, res, next)=> {
   
 });
 
-router.get('/',getCategories)
+// router.get('/',getCategories)
 
 
 
@@ -229,7 +229,6 @@ router.get('/cart',async(req,res)=>{
   try{
     
     user.getCart(owner).then(async(products)=>{
-      console.log('aghgahghghghghghghg');
       console.log(products);
       let total= await user.totalPrice(req.session.userData._id)
       
@@ -248,7 +247,7 @@ router.get('/cart',async(req,res)=>{
 
           
 
-          res.status(200).render('user/cart',{use:true,user:req.session.userData,products,total,categoryList:req.session.categoryList,discountprice,discount})
+          res.status(200).render('user/cart',{use:true,user:req.session.userData,products,total,categoryList:req.session.categoryList,discountprice,discount,coupon})
         }else{
          
 
@@ -315,8 +314,9 @@ router.get('/checkout',(req,res)=>{
       
       let owner = req.session.userData._id
       await User.findOne({_id:owner}).then((coupon)=>{
-        let address = coupon.address
+        
         if(coupon.Coupon){
+        
           console.log('555555');
           console.log(coupon);
           let tot= total
@@ -325,11 +325,12 @@ router.get('/checkout',(req,res)=>{
           console.log(total);
           discountprice = (tot - discount)
           total = discountprice
-          
-          res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,address,categoryList: req.session.categoryList})
+          console.log('3333364');
+          console.log(req.session.selectAddress);
+          res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,categoryList: req.session.categoryList,address: req.session.selectAddress,discount})
         }else{
           
-       res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,address, categoryList: req.session.categoryList })
+       res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total, categoryList: req.session.categoryList,address: req.session.selectAddress })
         }})
   
       
@@ -375,6 +376,7 @@ router.post('/place-order',async(req,res)=>{
         user:req.body.userId,
         paymentMethod:req.body.payment_method,
         products:products,
+        Discount:discount,
         bill:total,
       })
       await order.save();
@@ -471,6 +473,8 @@ router.get('/success',(req,res)=>{
   try{
     let invoice = req.session.invoice
     user.getInvoice(invoice).then((result)=>{
+      console.log('310');
+      console.log(result);
       res.status(200).render('user/success',{use:true,result})
     })
   }catch(error){
@@ -564,6 +568,25 @@ router.get('/orders',(req,res)=>{
   
 })
 
+router.get('/singleorders/:id',(req,res)=>{
+  try{
+    person = req.session.userData
+    owner = person._id
+    orderId=req.params.id
+    console.log(orderId);
+    console.log(owner);
+    user.getSingleOrder(orderId).then((orders)=>{
+      
+    res.status(200).render('user/order',{orders,use:true,user:req.session.userData,categoryList:req.session.categoryList})
+    })
+  }catch(error){
+    res.status(400).render('500')
+  }
+ 
+  
+})
+
+
 
 router.get('/cancel-order/:id', async (req, res) => {
   try {
@@ -582,15 +605,29 @@ router.get('/cancel-order/:id', async (req, res) => {
 
 router.post('/applyCoupon',(req,res)=>{
   try{
+    console.log('a665');
     console.log(req.body);
-    user.applyCoupon(req.body,req.session.userData._id).then(async(response)=>{
-    console.log('0020202');
-   
+    user.applyCoupon(req.body,req.session.userData._id).then((response)=>{
+      if(response==0){
+        res.json({status:'invalid'})
+      }else{
+        res.status(200).json({status:true})
+      }
+      
+    })
+  }catch(error){
+    res.render('500')
+  }
+})
+router.post('/removeCoupon',(req,res)=>{
+  try{
+    user.removeCopon(req.body,req.session.userData._id).then((response)=>{
       res.status(200).json({status:true})
     })
   }catch(error){
     res.render('500')
   }
+ 
 })
 
 router.post('/search',(req,res)=>{
@@ -696,5 +733,20 @@ router.post('/removeFrom-wishlist',async(req,res)=>{
     res.status(400). render('500');
 }
 })
+
+router.post('/add-default-address',(req,res)=>{
+  try{
+    console.log(req.body)
+    user.addDefaultAddress(req.body).then((result)=>{
+      console.log(result);
+       req.session.selectAddress =  result;
+      res.status(200).redirect("/checkout");
+    })
+  }catch(error){
+    res.status(400).render('500')
+  }
+})
+
+
 
 module.exports = router;

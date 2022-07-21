@@ -1,4 +1,5 @@
 
+
     $("#checkout-form").submit((e)=>{
         e.preventDefault() // prevent actual form  submission
         console.log('ssaaaaaasIIIIIIIIIIIIIIIIIIII');
@@ -94,7 +95,12 @@
             method:'get',
             success:(response)=>{
                 if(response.status ==true){
-                    
+                    swal({
+                        title: "Success",
+                        text: "Product Added to Cart !",
+                        icon: "success",
+                        button: "Done",
+                      })
                 }else if(response.status==false) {
                     location.href('/login')
                 }
@@ -445,9 +451,9 @@ function removeFromCart(cartId,itemId){
             method:'post',
             data:$('#couponCode').serialize(),
             success:(response)=>{
-                if(response.status){
+                if(response.status==true){
                     location.reload()
-                }else{
+                }else if(response.status=='invalid'){
                     swal({
 
                         text: "Offer  Not Valid!",
@@ -622,3 +628,29 @@ function removeFromCart(cartId,itemId){
         })
     }
     
+    function RemoveCoupon(couponCode){
+        $.ajax({
+            url:'/removeCoupon',
+            data:{couponCode},
+            method:'post',
+            success:(response)=>{
+                if(response.status){
+                    swal(" Coupon has been Removed!", {
+                        icon: "success",
+                      }).then(()=>{
+                        location.reload()
+                      })}
+                    }
+        
+    }
+        )}
+
+    function Address(id){
+        $.ajax({
+            url:'/addBillingAddress'+data,
+            method:'get',
+            success:(response)=>{
+                document.getElementById('total').innerHTML=response.total
+            }
+        })
+    }

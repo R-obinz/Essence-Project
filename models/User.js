@@ -46,6 +46,9 @@ const userSchema = new mongoose.Schema({
     discount:{
         type:Number
     },
+    Code:{
+        type:String
+    },
     addresses:[{
         Name:{
             type:String

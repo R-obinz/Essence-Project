@@ -1,0 +1,118 @@
+
+<div style="margin-top: 85px;">  <div class="breadcumb_area bg-img" style="background-image: url(img/bg-img/breadcumb.jpg);">
+        <div class="container h-100">
+            <div class="row h-100 align-items-center">
+                <div class="col-12">
+                    <div class="page-title text-center">
+                        <h2>Orders</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+          {{#each orders}}
+        <div class="card rounded-3 mb-2" style="width:84%; margin-left: 142px;" >
+          <div class="card-body " style="padding: 0.5rem;">
+
+            <div class="row d-flex justify-content-between align-items-center" style="margin-top: 10px;">
+                
+              <div class="col-md-2 col-lg-2 col-xl-2">
+                <a href="" data-toggle="modal" data-target="#b{{this._id}}">
+                  <img
+                  src="/images/{{this.product.image}}"
+                  class="img-fluid rounded-3" alt="" style="height: 100px;">
+                </a>
+                
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-3">
+               {{this.product.productname}}
+               <br>
+              Qty: {{this.quantity}}
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                  {{this.subtotal}}
+              </div>
+        
+              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
+                {{#ifCound status 'Cancelled'}}
+                  <span style="color:red"> {{this.status}}</span> 
+                  
+                  {{else}}{{#ifCound status 'DELIVERED'}}
+                  <span style="color:green ;">{{this.status}}</span>
+                  <a  onclick="returnOdrer('{{this._id}}')" class="btn btn-sm" style="background-color: green;">Return </a>
+                  {{else}}{{#ifCound status 'Returned'}}
+                  <span style="color: rgb(8, 31, 161) ;">{{this.status}}</span>
+                  {{else}}
+                  <span style="color: orange ;">{{this.status}}</span>
+                  <a onclick=" cancelOrder('{{this._id}}')" class="btn btn-sm" style="background-color: red;">Cancel</a>
+                  {{/ifCound}}
+                  {{/ifCound}}
+                  {{/ifCound}}
+              </div>
+              
+            </div>
+                
+          </div>
+        </div>
+
+    
+    <!-- Modal -->
+    
+<div class="modal fade" id="b{{this._id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle" style="font-family: 'Times New Roman', Times, serif;">Delivery Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h6 style="font-family: 'Times New Roman', Times, serif;">Delivery Address</h6>
+        {{address}}
+        <br>
+       <span>MobileNumber:{{phone}}</span> 
+      </div>
+      <div class="container">
+        <h6 style="font-family: 'Times New Roman', Times, serif;">Product Details</h6>
+        <div class="row d-flex justify-content-between align-items-center" style="margin-top: 10px;">
+                
+              <div class="col-md-2 col-lg-2 col-xl-2">
+               
+                  <img
+                  src="/images/{{this.product.image}}"
+                  class="img-fluid rounded-3" alt="" style="height: 80px;">
+                
+                
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-3">
+               {{this.product.productname}}
+               <br>
+              Qty: {{this.quantity}}
+              Price:{{this.product.price}}
+              </div>
+              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                  {{this.subtotal}}
+              </div>
+               <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
+                {{#ifCound status 'Placed'}}
+                  {{this.created}}
+                  {{else}}
+                  {{this.updated}}
+                  {{/ifCound}}
+              </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      
+      </div>
+    </div>
+  </div>
+</div>
+{{/each}}
+
+
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

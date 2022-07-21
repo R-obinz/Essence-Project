@@ -2,7 +2,7 @@
 
 {{#if products}}
 
-<div class="row" style="margin-top: 8rem;">
+<div class="row" style="margin-top: 8rem; margin-bottom: 8rem;">
 
                 <div class="col-12 col-md-6" style="margin-left: 4rem;">
                   
@@ -36,16 +36,13 @@
                 <span   id="{{this.item}}" >{{this.quantity}} </span>
                   
 
-                {{!-- <button class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                  <i class="fas fa-plus"></i>
-                </button> --}}
+                
                 
                 <button style="width: 65px;" class="cart-item-count ml-3" onclick="changeQuantity('{{this._id}}','{{this.item}}','{{this.quantity}}','{{this.product.productname}}',{{this.product.price}},1)">+</button>
               </div>
-              {{!-- <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                <h5 id='{{this.product.productname}}' class="mb-0">₹{{this.subtotal}}</h5>
-              </div> --}}
+              <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                <h6 id='{{this.product.productname}}' class="mb-0">₹{{this.subtotal}}</h6>
+              </div>
               <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                 {{!-- <a href="#!" class="text-danger"><i class="fa fa-trash" aria-hidden="true"></i></a> --}}
                 <button onclick="removeFromCart('{{this._id}}','{{this.item}}')"><i class="fa fa-trash" aria-hidden="true" ></i></button>
@@ -58,21 +55,33 @@
         {{/each}}
 
         
-            <form>
+           
   {{!-- <div >
     
     <input type="text" class="form-control" id="coupon"  name="coupon" style="width: 18rem;" >
     <button type="submit" class="btn btn-sm" style="background-color: #0315ff; color: aliceblue;">Apply</button>
     
   </div> --}}
-
-  <div class="input-group ">
-  <input type="text" class="form-control" id="coupon" name="coupon"  placeholder="Coupon Code" >
+{{#if coupon.Coupon }}
+ <form >
+ <div class="input-group ">
+  <input type="text" class="form-control" id="coupon" name="coupon"  placeholder="{{coupon.Code}}" disabled >
   <div class="input-group-append" style="width: 22rem;">
-    <button class="btn btn-sm" style="background-color: #0315ff;color:aliceblue" type="submit">Apply</button>
+    <button class="btn btn-sm" style="background-color: #ff0318c9;color:aliceblue"  onclick="RemoveCoupon('{{coupon.Code}}')">Remove</button>
   </div>
 </div>
-        </form>
+   </form>
+{{else}}
+<form id="couponCode">
+  <div class="input-group ">
+  <input type="text" class="form-control" id="coupons" name="coupon"  placeholder="Coupon Code">
+  <div class="input-group-append" style="width: 22rem;">
+    <button class="btn btn-sm" style="background-color: #0315ff;color:aliceblue" type="submit" >Apply</button>
+  </div>
+</div>
+</form>
+{{/if}}
+
         
         
         
@@ -100,9 +109,10 @@
                             <li><span >Delivery Charges</span> <span style="color: rgb(23, 204, 23);">Free</span></li>
                             {{!-- {{#ifCound user.Coupon 'true' }} --}}
                             
-                            <li><span>Amount</span> <span id="total">{{total}}</span></li>
-
-                            <li><span> Total Amount</span> <span id="discounttotal">{{discountprice}}</span></li>
+                            <li><span>Total Amount</span> <span id="total">{{total}}</span></li>
+                              {{#if coupon.Coupon }}
+                            <li><span> Total Amount after Discount</span> <span id="discounttotal">{{discountprice}}</span></li>
+                            {{/if}}
                             {{!-- {{else}} --}}
                             {{!-- {{/ifCound}} --}}
                         </ul>
@@ -134,3 +144,5 @@
               <button type="button" onclick="location.href='/'"  style="background-color:#0315ff ; color: aliceblue; padding: 8px; ">Shop now</button>
               </div>
             {{/if}}
+
+            <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>

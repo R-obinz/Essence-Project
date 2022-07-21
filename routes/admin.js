@@ -58,17 +58,18 @@ router.get('/user',verifyLogin, getusers());
 
 
 router.get('/adminpanel',verifyLogin, async (req, res) => {
-    let COD = await admin.codAmount()
-    console.log(COD);
-    let orders = await admin.totalOrders()
-    let Razorpay = await admin.razorPay()
-    let userCount = await admin.userCount()
-    let datas = await admin.data()
-    let topseller = await admin.TopSelling()
-    console.log(datas);
+    // let COD = await admin.codAmount()
+    
+    // let orders = await admin.totalOrders()
+    // let Razorpay = await admin.razorPay()
+    // let userCount = await admin.userCount()
+    // let datas = await admin.data()
+    // let topseller = await admin.TopSelling()
+    // console.log(datas);
     res.render('admin/admin-index', {
         admi: true,
-        ad: true,COD,orders,Razorpay,userCount,datas,topseller
+        ad: true,
+        // COD,orders,Razorpay,userCount,datas,topseller
     })
 })
 const getproducts = async (req, res) => {
@@ -475,4 +476,23 @@ router.post('/updateStatus',async(req,res)=>{
 
     
 })
+
+// router.get('/signup',(req,res)=>{
+//     res.render('admin/admin-signup')
+// })
+
+
+// router.post('/signup',async(req,res)=>{
+//     const admin = new Admin(req.body)
+  
+//         const user = new Admin({
+//          username: req.body.username,
+//           password:req.body.password,
+          
+          
+//         })
+//         const register = await user.save();
+
+// }
+// )
 module.exports = router;

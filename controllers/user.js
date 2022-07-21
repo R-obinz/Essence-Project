@@ -294,6 +294,60 @@ module.exports ={
       
         })
     },
+    getSingleOrder:(id)=>{
+        return new Promise(async(resolve,reject)=>{
+            try{
+                let orders = await Order.aggregate([
+                    {$match:{_id:mongoose.Types.ObjectId(id)}},
+                
+                    {
+                        $unwind:'$products'
+                    },{
+                        $project:{
+                            item:'$products.itemId',
+                            quantity:'$products.quantity',
+                            status:'$status',
+                            paymentMethod:'$paymentMethod',
+                            address:'$deliveryDetails.address',
+                            phone:'$deliveryDetails.mobilenumber',
+                            created: { $dateToString: {
+                                format: "%d-%m-%Y",
+                                date: "$createdAt"
+                              }},
+                        
+                            updated: { $dateToString: {
+                                format: "%d-%m-%Y",
+                                date: "$updatedAt"
+                              }}
+                        }
+                    },
+                    {
+                        $lookup:{
+                            from:Item.collection.name,
+                            localField:'item',
+                            foreignField:'_id',
+                            as:'product'
+                        }
+                    },{
+                        $project:{
+                            created:1,updated:1,phone:1,address:1,paymentMethod:1,status:1,item:1,quantity:1,product:{$arrayElemAt:['$product',0]}
+                        }
+                    }, {
+                        $project:{
+                            created:1,updated:1,phone:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,product:1, subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
+            
+                        }
+                    }
+                ])
+                console.log(orders);
+                resolve(orders)
+            }catch(error){
+                reject(error)
+            }
+            
+        })
+    },
+
 
     getOrder:(owner)=>{
         return new Promise(async(resolve,reject)=>{
@@ -431,6 +485,7 @@ module.exports ={
                             item:'$products.itemId',
                             quantity:'$products.quantity',
                             productname:'$product.productname',
+                            discount:'$Discount',
                             total:'$bill'
     
                         }
@@ -445,12 +500,12 @@ module.exports ={
                     },
                     {
                         $project:{
-                            firstname:1,lastname:1,email:1,address:1,mobile:1,paymentMethod:1,productname:1,quantity:1,total:1,product:{$arrayElemAt:['$product',0]}
+                           discount:1, firstname:1,lastname:1,email:1,address:1,mobile:1,paymentMethod:1,productname:1,quantity:1,total:1,product:{$arrayElemAt:['$product',0]}
                         }
                     },{
                         
                             $project:{
-                                firstname:1,lastname:1,email:1,address:1, mobile:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,total:1,product:1, subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
+                                discount:1,firstname:1,lastname:1,email:1,address:1, mobile:1,address:1,paymentMethod:1,status:1, item:1,quantity:1,total:1,product:1, subtotal:{$sum:{$multiply:['$quantity','$product.price']}}
                 
                             }
                         
@@ -490,6 +545,7 @@ module.exports ={
         return new Promise(async(resolve,reject)=>{
             try{
               let coupon =  await Coupons.findOne({couponCode:Data.coupon}).then(async(coup)=>{
+                console.log('54a5');
                 if(!coup){
                     resolve(0)
                     
@@ -500,7 +556,8 @@ module.exports ={
                     await User.updateOne({_id:id},{
                         $set:{
                             Coupon:true,
-                            discount: coup.discount
+                            discount: coup.discount,
+                            Code:Data.coupon
                         }
                     })
                    discount = coup.discount;
@@ -517,6 +574,31 @@ module.exports ={
             }
         })
     },
+    removeCopon:(Data,id)=>{
+        return new Promise(async(resolve,reject)=>{
+            try{
+              let coupon =  await Coupons.findOne({couponCode:Data.coupon}).then((coup)=>{
+                console.log('54a5');
+                let remove= User.updateOne({_id:id},{
+                        $unset:{
+                            Coupon:1,
+                            discount: 1,
+                            Code:1
+                        }
+                    })
+                   console.log(remove);
+                resolve(remove)
+              })
+            
+              
+
+             
+            }catch(error){
+                reject(error)
+            }
+        })
+    },
+
     coupon:(Data)=>{
         return new Promise(async(resolve,reject)=>{
             try{    
@@ -630,5 +712,30 @@ module.exports ={
                 reject(error)
             }
         })
+    },
+    addDefaultAddress:(Id)=>{
+        return new Promise(async(resolve,reject)=>{
+            try{
+               let addres= await User.aggregate([
+                    {
+                        $unwind:'$addresses'
+                    },{
+                        $project:{
+                            Name:'$addresses.Name',
+                            Email:'$addresses.Email',
+                            Number:'$addresses.Number',
+                            address:'$addresses.address',
+                            city:'$addresses.city',
+                            pincode:'$addresses.pincode'
+                        }
+                    }
+                ])
+                console.log(addres);
+                resolve(addres[0])
+            }catch(error){
+                reject(error)
+            }
+        })
+
     }
 }

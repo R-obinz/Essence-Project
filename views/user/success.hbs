@@ -52,7 +52,7 @@
   <hr>
   
   <p class="lead">
-    <a class="btn  btn-sm" style="background-color:blue; color: white;" href="/orders" role="button">Continue to OrderPage</a>
+    <a class="btn  btn-sm" style="background-color:blue; color: white;" href="/singleorders/{{result.[0]._id}}" role="button">Continue to OrderPage</a>
   </p>
 </div>
 <div id="ada">
@@ -92,22 +92,22 @@
      </div>
      
      <div class="row pad-top-botm client-info">
-         <div class="col-lg-6 col-md-6 col-sm-6">
+         <div class="col-lg-6 col-md-6 col-sm-6" style="max-width: 105.33333%;">
          <h4>  <strong>Client Information</strong></h4>
-           <strong> Robin <b>Justin</strong>
+           <strong> {{result.[0].firstname}} <b>{{result.[0].lastname}}</strong>
              <br>
-                  <b>Address :</b> Malieakkal(H)
+                  <b>Address :</b> {{result.[0].address}}
               <br>
-                 INDIA
+                 
              <br>
-             <b>Call :</b> 7034049225
+             <b>Call :</b> {{result.[0].mobile}}
               <br>
-             <b>E-mail :</b> robinjustinz011@gmail.com
+             <b>E-mail :</b> {{result.[0].email}}
          </div>
           <div class="col-lg-6 col-md-6 col-sm-6">
             
                <h4>  <strong>Payment Details </strong></h4>
-            <b>Bill Amount :  3000 INR 
+            <span>Bill Amount :  {{result.[0].total}}INR </span> 
               {{!-- <br>
                Bill Date :  01th August 2014
               <br>
@@ -148,19 +148,14 @@
                         </table>
                </div>
              <hr>
-             {{#each result}}
+             
              <div class="ttl-amts">
-               <h5>  Total Amount : {{this.total}} INR </h5>
+                <span>Discount:{{result.[0].discount}}INR</span>
+               <h6>  Total Amount : {{result.[0].total}} INR </h6>
              </div>
              <hr>
-              {{!-- <div class="ttl-amts">
-                  <h5>  Tax : 90 USD ( by 10 % on bill ) </h5>
-             </div> --}}
-             {{!-- <hr>
-              <div class="ttl-amts">
-                  <h4> <strong>Bill Amount : {{this.total}}INR</strong> </h4>
-             </div> --}}
-             {{/each}}
+              
+             
          </div>
      </div>
       <div class="row">

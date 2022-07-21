@@ -13,6 +13,116 @@
         </div>
     </div>
     <!-- ##### Breadcumb Area End ##### -->
+                            {{!-- <div>
+                            <div style=" background-color: #e5ecee;width: 730px;height: 300px;overflow:auto;"
+                                class="px-5">
+                                <h4 class="pt-3">Choose a Address</h4>
+                                {{#each user.addresses}}
+                                <hr>
+                                <div class="d-flex ">
+
+                                    <div>
+                                        <hr>
+                                    </div>
+                                    <table>
+                                        <thead>
+                                            
+                                            <tr>
+                                                <td><input type="radio" value="{{this._id}}" onclick="Address('{{this._id}}')"  name="add"></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                            <tr>
+                                                <td>Name </td>
+                                                <td class=" px-2">:</td>
+                                                <td class=" px-3">{{Name}} {{lastname}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Email </td>
+                                                <td class=" px-2">:</td>
+                                                <td class="px-3">{{Email}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Mobile no </td>
+                                                <td class=" px-2">:</td>
+                                                <td class="px-3">{{Number}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Address </td>
+                                                <td class=" px-2">:</td>
+                                                <td class="px-3">{{address}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>City </td>
+                                                <td class=" px-2">:</td>
+                                                <td class="px-3">{{city}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Pincode </td>
+                                                <td class=" px-2">:</td>
+                                                <td class=" px-3">{{pincode}}</td>
+                                            </tr>
+
+                                            <div>
+                                                <hr>
+                                            </div>
+                                        </tbody>
+                                    </table>
+
+
+                                </div>
+                                {{/each}}
+                            </div>
+                        </div> --}}
+
+                        
+
+<!-- Large modal -->
+<button type="button" class="btn btn-dark" data-toggle="modal" data-target=".bd-example-modal-lg" style="width: 475px; margin-top: 2rem;">Choose An Address</button>
+
+<div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+     {{#each user.addresses}}
+    <div class="modal-content">
+      
+        
+            <form id="form-addAddress" method="post" action="/add-default-address" class=" m-5">
+
+               
+                <!-- 2 column grid layout with text inputs for the first and last names -->
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="addressId" value="{{this._id}}"
+                        id="flexRadioDefault1" style="width: 16px;
+    height: 14px;
+    margin-right: 10px;" required >
+
+
+                    <label class="form-check-label" for="flexRadioDefault1">
+                        <p>
+                            {{this.Name}} <br> {{this.Email}} <br>{{this.address}} <br>{{this.pincode}}
+                        </p>
+                    </label>
+                </div>
+                <!-- Message input -->
+                <button type="submit" class="primary-btn btn-lg btn-block">
+                    Select
+                </button>
+
+
+            </form>
+                
+
+       
+
+    </div>
+     {{/each}}
+  </div>
+</div>
 
     <!-- ##### Checkout Area Start ##### -->
     <form id="checkout-form" >
@@ -20,7 +130,7 @@
         <div class="container">
             <div class="row">
 
-                <div class="col-12 col-md-6">
+                <div class="col-12 col-md-6" style="margin-top: -80px;">
                     <div class="checkout_details_area mt-50 clearfix">
 
                         <div class="cart-page-heading mb-30">
@@ -29,38 +139,26 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="first_name">First Name <span>*</span></label>
-                                    <input type="text" class="form-control" id="first_name" name="firstname" value="" required>
+                                    <input type="text" class="form-control" id="first_name" name="firstname" value="{{address.Name}}" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="last_name">Last Name <span>*</span></label>
                                     <input type="text" class="form-control" id="last_name" name="lastname" value="" required>
                                 </div>
                                 
-                                <div class="col-12 mb-3">
-                                    <label for="country">Country <span>*</span></label>
-                                    <select class="w-100" id="country">
-                                        <option value="usa">United States</option>
-                                        <option value="uk">United Kingdom</option>
-                                        <option value="ger">Germany</option>
-                                        <option value="fra">France</option>
-                                        <option value="ind">India</option>
-                                        <option value="aus">Australia</option>
-                                        <option value="bra">Brazil</option>
-                                        <option value="cana">Canada</option>
-                                    </select>
-                                </div>
+                               
                                 <div class="col-12 mb-3">
                                     <label for="street_address">Address <span>*</span></label>
-                                    <input type="text" class="form-control mb-3" id="street_address" name="address" placeholder="{{address}}" value="">
+                                    <input type="text" class="form-control mb-3" id="street_address" name="address" value="{{address.address}}">
                                     <input type="text" class="form-control" id="street_address2" value="">
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="postcode">Postcode <span>*</span></label>
-                                    <input type="text" class="form-control" id="postcode" name="postcode" value="">
+                                    <input type="text" class="form-control" id="postcode" name="postcode" value="{{address.pincode}}">
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="city">Town/City <span>*</span></label>
-                                    <input type="text" class="form-control" name="city" id="city" value="">
+                                    <input type="text" class="form-control" name="city" id="city" value="{{address.city}}">
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="state">Province <span>*</span></label>
@@ -68,11 +166,11 @@
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="phone_number">Phone No <span>*</span></label>
-                                    <input type="tel" class="form-control"  name="mobilenumber" id="mobilenumber" min="0" value="">
+                                    <input type="tel" class="form-control"  name="mobilenumber" id="mobilenumber" min="0" value="{{address.Number}}">
                                 </div>
                                 <div class="col-12 mb-4">
                                     <label for="email_address">Email Address <span>*</span></label>
-                                    <input type="email" class="form-control" name="email" id="email_address" value="">
+                                    <input type="email" class="form-control" name="email" id="email_address" value="{{address.Email}}">
                                 </div>
 
                                 <div class="col-12">
@@ -103,14 +201,15 @@
                          
                         <div>
                         <ul class="order-details-form mb-4">
-                            <li><span>Product</span> <span>Total</span></li>
+                            <li><span>Product</span><span>Price</span> <span>Total</span></li>
                             {{#each products}}
-                            <li><span >{{this.product.productname}} </span>  <span>₹ {{this.subtotal}}</span></li>
+                            <li><span style="width: 3rem;" >{{this.product.productname}} </span> <span>{{product.price}}</span> <span>₹ {{this.subtotal}}</span></li>
                             {{/each}}
                             
                             <li><span>Subtotal</span> <span>{{total}}</span></li>
 
                             <li><span>Shipping</span> <span>Free</span></li>
+                            <li><span>Discount</span> <span style="color: rgb(13, 211, 13);">₹{{discount}}</span></li>
                             <li><span>Total</span> <span>₹ {{total}}</span></li>
                         </ul>
                         </div>

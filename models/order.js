@@ -34,6 +34,9 @@ const orderSchema = new mongoose.Schema({
         required:true,
         type:String,
     },
+    Discount:{
+        type:String
+    },
     bill:{
         type:Number,
         required:true
