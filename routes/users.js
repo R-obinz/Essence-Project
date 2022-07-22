@@ -385,7 +385,7 @@ router.post('/place-order',async(req,res)=>{
       await order.save();
       console.log(order._id)
       req.session.invoice = order._id
-      await Cart.findOneAndDelete({user})
+      
 
     if(req.body.payment_method =='cod'){
       console.log('djd');
@@ -475,9 +475,11 @@ router.post('/verify-payment',async(req,res)=>{
 router.get('/success',(req,res)=>{
   try{
     let invoice = req.session.invoice
-    user.getInvoice(invoice).then((result)=>{
+    user.getInvoice(invoice).then(async(result)=>{
       console.log('310');
       console.log(result);
+      let user=req.session.userData._id
+      await Cart.findOneAndDelete({user})
       res.status(200).render('user/success',{use:true,result})
     })
   }catch(error){
