@@ -313,6 +313,9 @@ router.get('/checkout',(req,res)=>{
       let total = await user.totalPrice(req.session.userData._id) 
       
       let owner = req.session.userData._id
+      let alladdress = await user.allAddress(req.session.userData._id)
+      console.log('55s');
+      console.log(alladdress);
       await User.findOne({_id:owner}).then((coupon)=>{
         
         if(coupon.Coupon){
@@ -326,11 +329,11 @@ router.get('/checkout',(req,res)=>{
           discountprice = (tot - discount)
           total = discountprice
           console.log('3333364');
-          console.log(req.session.selectAddress);
-          res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,categoryList: req.session.categoryList,address: req.session.selectAddress,discount})
+          console.log(alladdress);
+          res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total,categoryList: req.session.categoryList,address: req.session.selectAddress,discount,alladdress})
         }else{
           
-       res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total, categoryList: req.session.categoryList,address: req.session.selectAddress })
+       res.status(200).render('user/checkout',{products,use:true,user:req.session.userData,total, categoryList: req.session.categoryList,address: req.session.selectAddress,alladdress })
         }})
   
       
@@ -736,8 +739,9 @@ router.post('/removeFrom-wishlist',async(req,res)=>{
 
 router.post('/add-default-address',(req,res)=>{
   try{
+    console.log('a55');
     console.log(req.body)
-    user.addDefaultAddress(req.body).then((result)=>{
+    user.addDefaultAddress(req.session.userData._id,req.body).then((result)=>{
       console.log(result);
        req.session.selectAddress =  result;
       res.status(200).redirect("/checkout");

@@ -58,18 +58,18 @@ router.get('/user',verifyLogin, getusers());
 
 
 router.get('/adminpanel',verifyLogin, async (req, res) => {
-    // let COD = await admin.codAmount()
+    let COD = await admin.codAmount()
     
-    // let orders = await admin.totalOrders()
-    // let Razorpay = await admin.razorPay()
-    // let userCount = await admin.userCount()
-    // let datas = await admin.data()
-    // let topseller = await admin.TopSelling()
-    // console.log(datas);
+    let orders = await admin.totalOrders()
+    let Razorpay = await admin.razorPay()
+    let userCount = await admin.userCount()
+    let datas = await admin.data()
+    let topseller = await admin.TopSelling()
+    console.log(datas);
     res.render('admin/admin-index', {
         admi: true,
         ad: true,
-        // COD,orders,Razorpay,userCount,datas,topseller
+        COD,orders,Razorpay,userCount,datas,topseller
     })
 })
 const getproducts = async (req, res) => {

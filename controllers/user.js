@@ -713,10 +713,10 @@ module.exports ={
             }
         })
     },
-    addDefaultAddress:(Id)=>{
+    addDefaultAddress:(user,Id)=>{
         return new Promise(async(resolve,reject)=>{
             try{
-               let addres= await User.aggregate([
+                let addres= await User.aggregate([
                     {
                         $unwind:'$addresses'
                     },{
@@ -737,5 +737,36 @@ module.exports ={
             }
         })
 
+    },
+    allAddress:(id)=>{
+        return new Promise(async(resolve,reject)=>{
+            try{
+                let addres= await User.aggregate([
+                    {$match:{
+                        _id:mongoose.Types.ObjectId(id)
+                    }
+                    },
+                    {
+                        $unwind:'$addresses'
+                    },{
+                        $project:{
+                            addresses:'$addresses'
+                            // Name:'$addresses.Name',
+                            // Email:'$addresses.Email',
+                            // Number:'$addresses.Number',
+                            // address:'$addresses.address',
+                            // city:'$addresses.city',
+                            // pincode:'$addresses.pincode'
+                        }
+                    }
+                ])
+                console.log('4s5');
+                console.log(addres)
+                resolve(addres)
+            }catch(err){
+                reject(err)
+            }
+        })
     }
 }
+
