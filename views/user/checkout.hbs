@@ -35,7 +35,14 @@
                         id="flexRadioDefault1" style="width: 16px;
     height: 14px;
     margin-right: 10px;" required >
-    
+
+                        <input type="text" name=" Name" value=" {{this.addresses.Name}}" hidden>
+                        <input type="text" name="Email" value=" {{this.addresses.Email}}" hidden>
+                        <input type="text" name="address" value="{{this.addresses.address}}" hidden>
+                         <input type="text" name="address" value="{{this.addresses.pincode}}" hidden>
+                         <input type="text" name="address" value="{{this.addresses.city}}" hidden>
+                          <input type="text" name="address" value="{{this.addresses.Number}}" hidden>
+
 
                     <label class="form-check-label" for="flexRadioDefault1">
                         <p>
@@ -79,7 +86,7 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="last_name">Last Name <span>*</span></label>
-                                    <input type="text" class="form-control" id="last_name" name="lastname" value="" required>
+                                    <input type="text" class="form-control" id="last_name" name="lastname" value="" >
                                 </div>
                                 
                                

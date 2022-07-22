@@ -742,11 +742,12 @@ router.post('/add-default-address',(req,res)=>{
   try{
     console.log('a55');
     console.log(req.body)
-    user.addDefaultAddress(req.session.userData._id,req.body).then((result)=>{
-      console.log(result);
-       req.session.selectAddress =  result;
-      res.status(200).redirect("/checkout");
-    })
+    req.session.selectAddress = req.body;
+    res.status(200).redirect("/checkout");
+    // user.addDefaultAddress(req.session.userData._id,req.body).then((result)=>{
+    //   console.log(result);
+      
+    // })
   }catch(error){
     res.status(400).render('500')
   }
