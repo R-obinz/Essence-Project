@@ -358,12 +358,11 @@ router.post('/place-order',async(req,res)=>{
      
     let usere = req.session.userData
     if(usere.Coupon){
-      console.log('555555');
+      
       
       let tot= total
       let discount =(tot*usere.discount)/100
-      console.log('2222');
-      console.log(total);
+     
       discountprice = (tot - discount)
       total = discountprice
 
@@ -425,7 +424,7 @@ router.post('/place-order',async(req,res)=>{
       await order.save();
       console.log(order._id)
       req.session.invoice = order._id
-      await Cart.findOneAndDelete({user})
+     
 
     if(req.body.payment_method =='cod'){
       console.log('djd');
