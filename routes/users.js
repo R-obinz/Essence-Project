@@ -355,8 +355,9 @@ router.post('/place-order',async(req,res)=>{
     const cart = await Cart.findOne({users})
     const products = cart.items
     let total = await user.totalPrice(req.session.userData._id)
-     
-    let usere = req.session.userData
+    let owner = req.session.userData._id
+   let usere= await User.findOne({_id:owner})
+    
     if(usere.Coupon){
       
       
